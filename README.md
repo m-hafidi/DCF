@@ -63,6 +63,6 @@ This is my first project on GitHub, so I'd love to hear what you think. Ideas fo
 
 ## Author
 
-Built by Zi Cong Tan, MS Finance (Quantitative Finance with AI) student. The valuation models, assumptions and research are my own; the interface was built with Claude Code.
+Built by Mohamed Hafidi, MS Finance (Finance) student. The valuation models, assumptions and research are my own; the interface was built with Claude Code.
 
-Connect on [LinkedIn](https://www.linkedin.com/in/tanzicong) or [Instagram](https://www.instagram.com/cong_zee/).
+Connect on [LinkedIn](https://www.linkedin.com/in/moham-hafidi/).
