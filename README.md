@@ -2,7 +2,7 @@
 
 **A DCF you can actually read.** Same math as the spreadsheet, without the wall of grey cells.
 
-**[Try it live →](https://zi-cong-tan.github.io/DCF-Calculator-Aesthetic/)**
+**[Try it live →](https://m-hafidi.github.io/DCF/)**
 
 ![DCF Calculator](docs/screenshot.png)
 
@@ -19,7 +19,7 @@ This calculator puts those answers first.
 - **Stress-testing takes one click.** A bear case button, a reset button, and a sensitivity grid that marks the cell nearest today's price.
 - **It looks good on a projector.** Dark and light themes, clear type, nothing to squint at.
 
-Nothing is lost in the translation. The four bundled models are built from public filings and market data on the Casablanca Stock Exchange, and you can import any workbook built on the same template. [Open it in your browser](https://zi-cong-tan.github.io/DCF-Calculator-Aesthetic/); there's nothing to install.
+Nothing is lost in the translation. The four bundled models are built from public filings and market data on the Casablanca Stock Exchange, and you can import any workbook built on the same template. [Open it in your browser](https://m-hafidi.github.io/DCF/); there's nothing to install.
 
 ## What's inside
 
@@ -34,7 +34,7 @@ Nothing is lost in the translation. The four bundled models are built from publi
 
 ## How to use
 
-1. **Open it.** Go to **[zi-cong-tan.github.io/DCF-Calculator-Aesthetic/](https://zi-cong-tan.github.io/DCF-Calculator-Aesthetic/)**. Nothing to install or sign up for. (To use it offline, click the green **Code** button above, choose **Download ZIP**, and double-click `index.html`.)
+1. **Open it.** Go to **[m-hafidi.github.io/DCF/](https://m-hafidi.github.io/DCF/)**. Nothing to install or sign up for. (To use it offline, click the green **Code** button above, choose **Download ZIP**, and double-click `index.html`.)
 2. **Pick a company.** Click one of the buttons under the search bar, or type a name or ticker.
 3. **Read the answer.** The top row shows the value per share, the market price, and the long-run margin the price needs.
 4. **Change the assumptions.** Edit any box on the left. Percentages are typed as plain numbers (25 means 25%). Edited boxes are outlined and show the base value, and everything on the right updates as you type.
@@ -59,7 +59,7 @@ Prices and the risk-free rate are as of mid-October 2026. This is a learning and
 
 This is my first project on GitHub, so I'd love to hear what you think. Ideas for making the calculator better, things that confused you, features you'd want, or suggestions for what I should build next are all welcome.
 
-[Open an issue](https://github.com/zi-cong-tan/DCF-Calculator-Aesthetic/issues/new) or message me on LinkedIn.
+[Open an issue](https://github.com/m-hafidi/DCF/issues/new) or message me on LinkedIn.
 
 ## Author
 
