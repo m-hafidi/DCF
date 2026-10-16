@@ -94,13 +94,23 @@
   .calc b { color: var(--fg); font-weight: 600; }
   .calc.k b { color: var(--acc); }
 
-  .hero { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; }
-  .stat { background: var(--surface2); border-radius: 10px; padding: 16px 18px; display: grid; gap: 6px; align-content: start; }
-  .stat .lb { font-size: 13px; color: var(--muted); }
-  .stat .v { font: 600 34px/1.05 var(--display); letter-spacing: -0.01em; white-space: nowrap; }
-  .stat .s { font-size: 13px; color: var(--muted); }
+  .hero-card { container-type: inline-size; }
+  .hero { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  @container (min-width: 860px) {
+    .hero { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  }
+  @container (max-width: 360px) {
+    .hero { grid-template-columns: 1fr; gap: 10px; }
+  }
+  .stat { background: var(--surface2); border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; min-height: 110px; min-width: 0; box-sizing: border-box; }
+  .stat .lb { font-size: 13px; font-weight: 500; color: var(--muted); line-height: 1.35; min-height: 34px; display: flex; align-items: flex-start; gap: 5px; }
+  .stat .v { font-family: var(--display); font-weight: 600; font-size: clamp(22px, 2.4vw, 28px); line-height: 1.15; letter-spacing: -0.01em; display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 6px; min-width: 0; }
+  .stat .v .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .stat .v .cur { font-family: var(--body); font-size: 13.5px; font-weight: 600; color: var(--muted); letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; }
+  .stat .s { font-size: 13px; color: var(--muted); line-height: 1.35; min-height: 18px; }
   .stat.main { background: var(--acc); color: var(--on-acc); }
-  .stat.main .lb, .stat.main .s { color: inherit; }
+  .stat.main .lb, .stat.main .s { color: inherit; opacity: 0.9; }
+  .stat.main .v .cur { color: inherit; opacity: 0.85; }
   .up { color: var(--ip); } .dn { color: var(--eq); }
   .cohead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 16px; margin-bottom: 16px; }
   .cohead h2 { font-size: 24px; }
@@ -110,10 +120,10 @@
 
   .two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
   .rows { display: grid; font-size: 14.5px; }
-  .rows div { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-top: 1px solid var(--rule); }
+  .rows div { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 8px 0; border-top: 1px solid var(--rule); }
   .rows div:first-child { border-top: 0; }
-  .rows span { color: var(--muted); }
-  .rows b { text-align: right; }
+  .rows span { color: var(--muted); min-width: 0; }
+  .rows b { text-align: right; white-space: nowrap; flex-shrink: 0; }
   .rows .tot span, .rows .tot b { color: var(--fg); font-weight: 700; }
   .lock { display: inline-block; width: 11px; height: 12px; margin-right: 6px; vertical-align: -1px; background: currentColor; opacity: 0.6;
           -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 12'%3E%3Cpath d='M2 5V3.5a3.5 3.5 0 0 1 7 0V5h1v7H1V5zm1.5 0h4V3.5a2 2 0 0 0-4 0z'/%3E%3C/svg%3E") center/contain no-repeat;
@@ -152,9 +162,12 @@
   @media (max-width: 560px) {
     .dgrid { grid-template-columns: 1fr; }
     .yrs { grid-template-columns: repeat(5, minmax(52px, 1fr)); gap: 6px; }
-    .stat .v { font-size: 26px; }
+    .stat { padding: 12px 12px; }
+    .stat .lb { min-height: 28px; }
     .hero { grid-template-columns: 1fr 1fr; gap: 10px; }
-    .stat { padding: 12px 14px; }
+  }
+  @media (max-width: 400px) {
+    .hero { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -192,7 +205,7 @@
 
     <div class="stack">
       <div class="warn" id="warn" role="alert">These assumptions cannot be valued. The discount rate must be higher than terminal growth, and the return on capital and the sales-to-capital ratio must be above zero.</div>
-      <section class="card" aria-live="polite">
+      <section class="card hero-card" aria-live="polite">
         <div class="cohead"><h2 id="coname"></h2><p id="cosrc"></p></div>
         <div class="hero">
           <div class="stat main"><span class="lb">Value per share</span><span class="v" id="r-val"></span><span class="s" id="r-vs"></span></div>
@@ -362,6 +375,13 @@ function fromForm(v) {
 // ---- formatting ----------------------------------------------------------------
 function num(v, d) { return v.toLocaleString('en-US', { maximumFractionDigits: d == null ? 0 : d }); }
 function money(c, v, d) { var s = v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }); return c.cur.length > 1 ? s + ' ' + c.cur : c.cur + s; }
+function moneyHtml(c, v, d) {
+  var s = v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+  if (c.cur && c.cur.length > 1) {
+    return '<span class="num">' + s + '</span> <span class="cur">' + esc(c.cur) + '</span>';
+  }
+  return '<span class="cur">' + esc(c.cur || '') + ' </span><span class="num">' + s + '</span>';
+}
 function mil(v) { return (v < 0 ? '−' : '') + Math.abs(v).toLocaleString('en-US', { maximumFractionDigits: 0 }); }
 function pc(v, d) { return (v < 0 ? '−' : '') + Math.abs(v * 100).toFixed(d == null ? 1 : d) + '%'; }
 function signed(v) { return (v >= 0 ? '+' : '−') + Math.abs(v * 100).toFixed(1) + '%'; }
@@ -455,15 +475,15 @@ function render() {
   document.getElementById('warn').classList.toggle('on', !r.valid);
   document.getElementById('coname').textContent = C.name + (C.ticker ? ' (' + C.ticker + ')' : '');
   document.getElementById('cosrc').textContent = C.source + (C.sheetValue != null ? (Math.abs(b.value - C.sheetValue) < 0.005 ? ', matches the sheet' : ', sheet shows ' + money(C, C.sheetValue, 2)) : '');
-  document.getElementById('r-val').textContent = ok ? money(C, r.value, 2) : '—';
+  document.getElementById('r-val').innerHTML = ok ? moneyHtml(C, r.value, 2) : '—';
   document.getElementById('r-vs').innerHTML = ok ? (up >= 0 ? 'Above' : 'Below') + ' the price by <b>' + pc(Math.abs(up)) + '</b>' : 'Check the warning';
-  document.getElementById('r-px').textContent = money(C, f.price, 2);
+  document.getElementById('r-px').innerHTML = moneyHtml(C, f.price, 2);
   document.getElementById('r-pxs').textContent = niceDate(f.date);
-  document.getElementById('r-base').textContent = b.valid ? money(C, b.value, 2) : '—';
+  document.getElementById('r-base').innerHTML = b.valid ? moneyHtml(C, b.value, 2) : '—';
   var dv = r.value / b.value - 1;
   document.getElementById('r-diff').innerHTML = ok ? (Math.abs(dv) < 5e-5 ? 'You are on the base case' : 'Your case is <span class="' + (dv >= 0 ? 'up' : 'dn') + '">' + signed(dv) + '</span> vs base') : '';
   var im = ok ? impliedMargin(f, A) : NaN;
-  document.getElementById('r-imp').textContent = !isFinite(im) ? '—' : im > 1 ? 'Over 100%' : pc(im);
+  document.getElementById('r-imp').innerHTML = !isFinite(im) ? '—' : im > 1 ? '<span class="num">Over 100%</span>' : '<span class="num">' + (im < 0 ? '−' : '') + Math.abs(im * 100).toFixed(1) + '</span><span class="cur">%</span>';
   document.getElementById('r-imps').textContent = im > 1 ? 'No margin gets there: the price needs faster growth. Yours: ' + pc(A.lr) : 'Yours: ' + pc(A.lr);
 
   document.getElementById('waccbox').innerHTML =
