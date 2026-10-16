@@ -4,7 +4,7 @@
 
 **[Try it live →](https://zi-cong-tan.github.io/DCF-Calculator-Aesthetic/)**
 
-![DCF Calculator showing the Micron model](docs/screenshot.png)
+![DCF Calculator](docs/screenshot.png)
 
 ## Why this exists
 
@@ -19,12 +19,12 @@ This calculator puts those answers first.
 - **Stress-testing takes one click.** A bear case button, a reset button, and a sensitivity grid that marks the cell nearest today's price.
 - **It looks good on a projector.** Dark and light themes, clear type, nothing to squint at.
 
-Nothing is lost in the translation. The four bundled models match their source spreadsheets to the cent, and you can import any workbook built on the same template. [Open it in your browser](https://zi-cong-tan.github.io/DCF-Calculator-Aesthetic/); there's nothing to install.
+Nothing is lost in the translation. The four bundled models are built from public filings and market data on the Casablanca Stock Exchange, and you can import any workbook built on the same template. [Open it in your browser](https://zi-cong-tan.github.io/DCF-Calculator-Aesthetic/); there's nothing to install.
 
 ## What's inside
 
-- `index.html`: the calculator. Four models come bundled: Micron, Apple, Amazon and Tesla. Their values match the spreadsheets to the cent.
-- `examples/`: the four source workbooks, built from SEC filings and analyst estimates as of 14 Oct 2026. Every input has a note on where it came from. Use any of them as the template for your own company.
+- `index.html`: the calculator. Four Moroccan models come bundled: Attijariwafa Bank (ATW), Maroc Telecom (IAM), Cosumar (CSR) and Managem (MNG). Each is built from the company's latest published results and the market price as of 14 Oct 2026, with a note on where every figure came from.
+- `examples/`: four sample workbooks on the same template, to copy as the starting point for your own company. Every input has a note on where it came from.
 
 ## The model
 
