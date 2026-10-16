@@ -1,15 +1,15 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DCF Calculator</title>
-<meta name="description" content="A DCF valuation you can actually read. Change the judgment calls, see the value per share update live.">
+<title>Calculateur DCF · Évaluation Bourse de Casablanca</title>
+<meta name="description" content="Évaluation d'entreprises par les flux de trésorerie actualisés (DCF). Modifiez les hypothèses clés et visualisez la valeur par action en direct.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="DCF Calculator">
-<meta property="og:description" content="A DCF valuation you can actually read. Change the judgment calls, see the value per share update live.">
-<meta property="og:url" content="https://zi-cong-tan.github.io/DCF-Calculator-Aesthetic/">
-<meta property="og:image" content="https://zi-cong-tan.github.io/DCF-Calculator-Aesthetic/docs/social-preview.png">
+<meta property="og:title" content="Calculateur DCF · Évaluation Bourse de Casablanca">
+<meta property="og:description" content="Évaluation d'entreprises par les flux de trésorerie actualisés (DCF). Modifiez les hypothèses clés et visualisez la valeur par action en direct.">
+<meta property="og:url" content="https://m-hafidi.github.io/DCF/">
+<meta property="og:image" content="https://m-hafidi.github.io/DCF/docs/social-preview.png">
 <meta property="og:image:width" content="1920">
 <meta property="og:image:height" content="960">
 <meta name="twitter:card" content="summary_large_image">
@@ -174,106 +174,110 @@
 <body data-acc="eq">
 <div class="wrap">
   <header>
-    <h1>DCF Calculator<small>Change the judgment calls. Reported figures and market prices are locked.</small></h1>
-    <button class="theme" id="theme" type="button">Light / dark</button>
+    <h1>Calculateur DCF<small>Ajustez les hypothèses d'évaluation. Les données historiques et les cours boursiers sont verrouillés.</small></h1>
+    <button class="theme" id="theme" type="button">Mode sombre / clair</button>
   </header>
 
-  <section class="cobar" aria-label="Companies">
+  <section class="cobar" aria-label="Sociétés cotées">
     <div class="cotop">
       <div class="search">
         <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
-        <input id="q" type="search" placeholder="Search by name or ticker" aria-label="Search companies" autocomplete="off">
+        <input id="q" type="search" placeholder="Rechercher par société ou ticker (ex. ATW, IAM, CSR...)" aria-label="Rechercher une société" autocomplete="off">
       </div>
-      <label class="btn" for="file">Import a DCF spreadsheet<input id="file" type="file" accept=".xlsx,.xlsm"></label>
-      <button class="btn" id="add" type="button">Add a company by hand</button>
+      <label class="btn" for="file">Importer un modèle DCF (.xlsx)<input id="file" type="file" accept=".xlsx,.xlsm"></label>
+      <button class="btn" id="add" type="button">Ajouter une société manuellement</button>
     </div>
-    <div class="chips" id="chips" role="group" aria-label="Choose a company"></div>
-    <p class="empty" id="none" hidden>No company matches. Import its DCF spreadsheet or add it by hand.</p>
+    <div class="chips" id="chips" role="group" aria-label="Sélectionner une société"></div>
+    <p class="empty" id="none" hidden>Aucune société correspondante. Importez son classeur DCF ou ajoutez-la manuellement.</p>
     <p class="msg" id="msg" role="status"></p>
   </section>
 
   <div class="grid">
     <section class="card" aria-labelledby="ah">
-      <h2 id="ah">Your assumptions</h2>
-      <p class="sub">Edited fields are outlined, with the base value shown. Percentages are typed as numbers: 25 means 25%.</p>
+      <h2 id="ah">Vos hypothèses</h2>
+      <p class="sub">Les champs modifiés sont encadrés avec la valeur de référence affichée. Saisissez les pourcentages directement : 25 signifie 25 %.</p>
       <div class="bar">
-        <button class="btn" id="reset" type="button">Reset to the base case</button>
-        <button class="btn" id="bear" type="button">Bear case</button>
+        <button class="btn" id="reset" type="button">Scénario de base</button>
+        <button class="btn" id="bear" type="button">Scénario prudent</button>
       </div>
       <div id="form"></div>
     </section>
 
     <div class="stack">
-      <div class="warn" id="warn" role="alert">These assumptions cannot be valued. The discount rate must be higher than terminal growth, and the return on capital and the sales-to-capital ratio must be above zero.</div>
+      <div class="warn" id="warn" role="alert">Ces hypothèses ne permettent pas le calcul. Le taux d'actualisation (CMPC) doit être strictement supérieur à la croissance terminale, et le ROIC ainsi que l'intensité capitalistique doivent être positifs.</div>
       <section class="card hero-card" aria-live="polite">
         <div class="cohead"><h2 id="coname"></h2><p id="cosrc"></p></div>
         <div class="hero">
-          <div class="stat main"><span class="lb">Value per share</span><span class="v" id="r-val"></span><span class="s" id="r-vs"></span></div>
-          <div class="stat"><span class="lb"><i class="lock"></i>Price</span><span class="v" id="r-px"></span><span class="s" id="r-pxs"></span></div>
-          <div class="stat"><span class="lb">Base case</span><span class="v" id="r-base"></span><span class="s" id="r-diff"></span></div>
-          <div class="stat"><span class="lb">Long-run margin the price needs</span><span class="v" id="r-imp"></span><span class="s" id="r-imps"></span></div>
+          <div class="stat main"><span class="lb">Valeur par action</span><span class="v" id="r-val"></span><span class="s" id="r-vs"></span></div>
+          <div class="stat"><span class="lb"><i class="lock"></i>Cours boursier</span><span class="v" id="r-px"></span><span class="s" id="r-pxs"></span></div>
+          <div class="stat"><span class="lb">Scénario de base</span><span class="v" id="r-base"></span><span class="s" id="r-diff"></span></div>
+          <div class="stat"><span class="lb">Marge implicite du cours</span><span class="v" id="r-imp"></span><span class="s" id="r-imps"></span></div>
         </div>
       </section>
 
       <div class="two">
         <section class="card">
-          <h2>From cash flows to a share price</h2>
+          <h2>Du cash-flow à la valeur par action</h2>
           <p class="sub" id="cur-note"></p>
           <div class="rows" id="bridge"></div>
         </section>
         <section class="card">
-          <h2><i class="lock"></i>Locked facts</h2>
+          <h2><i class="lock"></i>Données financières vérifiées</h2>
           <p class="sub" id="facts-note"></p>
           <div class="rows" id="facts"></div>
-          <div class="bar"><button class="btn" id="remove" type="button" hidden>Remove from this browser</button></div>
+          <div class="bar"><button class="btn" id="remove" type="button" hidden>Supprimer de ce navigateur</button></div>
         </section>
       </div>
 
       <section class="card">
-        <h2>Ten-year forecast</h2>
+        <h2>Prévisions financières sur 10 ans</h2>
         <p class="sub" id="unit-note"></p>
         <div class="tw"><table id="proj"></table></div>
       </section>
 
       <section class="card">
-        <h2>Sensitivity: value per share</h2>
-        <p class="sub">Rows move the discount rate, columns move the long-run margin. Centre is your current case; the dashed cell is nearest the price.</p>
+        <h2>Analyse de sensibilité : valeur par action</h2>
+        <p class="sub">Les lignes font varier le CMPC, les colonnes la marge opérationnelle normative. Le centre indique votre scénario actuel ; la case en pointillés est la plus proche du cours boursier.</p>
         <div class="tw"><table class="sens" id="sens"></table></div>
       </section>
     </div>
   </div>
 
   <footer>
-    Built on the DCF template: mid-year discounting, a part-year for 2026, and a terminal value in which reinvestment is growth ÷ return on capital.
-    The four bundled models are built from public filings and market data on the Casablanca Stock Exchange. Imported spreadsheets must use the same template. Importing a newer version of a bundled model replaces it.
-    Companies you import or add, and your edits, are kept in this browser only.
+    Modèle DCF : actualisation en milieu d'année, prorata temporis pour 2026, et valeur terminale basée sur un réinvestissement normatif (g ÷ ROIC).
+    Les 4 modèles intégrés sont établis à partir des états financiers publics et des cours de la Bourse de Casablanca (BVC). Les feuilles de calcul importées doivent respecter cette structure.
+    Les sociétés ajoutées ou importées, ainsi que vos hypothèses modifiées, sont conservées localement dans votre navigateur.
   </footer>
 </div>
 
 <dialog id="dlg" aria-labelledby="dh">
   <form id="newco" method="dialog">
-    <h2 id="dh">Add a company by hand</h2>
-    <p class="sub" style="margin:0">Enter the reported figures. They will be locked. The starting assumptions are placeholders to change before you trust the value.
-      <a id="yh" href="https://www.casablanca-bourse.com" target="_blank" rel="noopener" style="color:var(--acc)">Look the figures up on the Casablanca Stock Exchange</a>.</p>
+    <h2 id="dh">Ajouter une société manuellement</h2>
+    <p class="sub" style="margin:0">Renseignez les données financières publiées. Elles seront verrouillées. Les hypothèses initiales sont des valeurs indicatives à adapter avant de vous fier à la valorisation.
+      <a id="yh" href="https://www.casablanca-bourse.com" target="_blank" rel="noopener" style="color:var(--acc)">Consulter la cote officielle sur la Bourse de Casablanca</a>.</p>
     <div class="dgrid">
-      <label>Company name<input name="name" required autocomplete="off"></label>
-      <label>Ticker<input name="ticker" required autocomplete="off" style="text-transform:uppercase"></label>
-      <label>Currency symbol<input name="cur" required value="MAD" maxlength="4"></label>
-      <label>Share price<input name="price" type="number" step="any" min="0.0001" required></label>
-      <label>Shares outstanding <small>millions</small><input name="shares" type="number" step="any" min="0.0001" required></label>
-      <label>Last full-year revenue <small>millions</small><input name="rev0" type="number" step="any" min="0.0001" required></label>
-      <label>Last full-year operating margin <small>%</small><input name="m0" type="number" step="any" required></label>
-      <label>Net cash <small>millions, negative for net debt</small><input name="netCash" type="number" step="any" required></label>
-      <label>Total debt <small>millions</small><input name="debt" type="number" step="any" min="0" required value="0"></label>
-      <label>Valuation date <small>in 2026</small><input name="date" type="date" min="2026-01-01" max="2026-12-30" required value="2026-10-14"></label>
-      <label>Risk-free rate <small>%, Morocco 10-year</small><input name="rf" type="number" step="any" required value="3.67"></label>
-      <label>Tax saving on interest <small>%, corporate tax rate</small><input name="tShield" type="number" step="any" required value="25"></label>
-      <label class="full">How reinvestment is modelled
-        <select name="reinvest"><option value="stc">Sales-to-capital: growth needs new capital (most companies)</option><option value="pct">Net investment as a % of revenue (heavy industry, oil, mining)</option></select></label>
+      <label>Raison sociale<input name="name" required autocomplete="off" placeholder="ex. Attijariwafa Bank"></label>
+      <label>Ticker boursier<input name="ticker" required autocomplete="off" style="text-transform:uppercase" placeholder="ex. ATW"></label>
+      <label>Symbole devise<input name="cur" required value="MAD" maxlength="4"></label>
+      <label>Cours de l'action<input name="price" type="number" step="any" min="0.0001" required></label>
+      <label>Nombre d'actions <small>en millions</small><input name="shares" type="number" step="any" min="0.0001" required></label>
+      <label>Dernier chiffre d'affaires / PNB annuel <small>en millions</small><input name="rev0" type="number" step="any" min="0.0001" required></label>
+      <label>Dernière marge opérationnelle <small>%</small><input name="m0" type="number" step="any" required></label>
+      <label>Trésorerie nette <small>en millions, négatif si dette nette</small><input name="netCash" type="number" step="any" required></label>
+      <label>Dette financière brute <small>en millions</small><input name="debt" type="number" step="any" min="0" required value="0"></label>
+      <label>Date d'évaluation <small>en 2026</small><input name="date" type="date" min="2026-01-01" max="2026-12-30" required value="2026-10-14"></label>
+      <label>Taux sans risque <small>%, Bons du Trésor Maroc 10 ans</small><input name="rf" type="number" step="any" required value="3.67"></label>
+      <label>Taux d'IS effectif <small>%, économie d'impôt sur intérêts</small><input name="tShield" type="number" step="any" required value="20"></label>
+      <label class="full">Modélisation du réinvestissement
+        <select name="reinvest">
+          <option value="stc">Ratio Chiffre d'affaires / Capital : la croissance nécessite du capital additionnel (cas général)</option>
+          <option value="pct">Investissement net en % du CA ou PNB (banques, mines, industrie lourde)</option>
+        </select>
+      </label>
     </div>
     <div class="dact">
-      <button class="btn" type="button" id="cancel">Cancel</button>
-      <button class="btn pri" type="submit">Add company</button>
+      <button class="btn" type="button" id="cancel">Annuler</button>
+      <button class="btn pri" type="submit">Ajouter la société</button>
     </div>
   </form>
 </dialog>
@@ -314,11 +318,24 @@ function impliedMargin(f, a) {
 
 // ---- reading the template ----------------------------------------------------
 // Cells of the DCF template; imports read the same cells.
-var BUNDLE = [{"B2":"Attijariwafa Bank (ATW) · Independent 10-year DCF","B3":"MAD millions unless stated · valuation date 14 Oct 2026 · blue = input, black = formula, yellow = key judgment","C6":"2026-10-14","B7":"Share price (MAD)","C7":670,"P7":"Attijariwafa Bank share price, close on the Casablanca Stock Exchange, around MAD 670 in October 2026.","B8":"Shares outstanding (millions)","C8":215.14,"P8":"About 215.14m shares, the bank’s stated capital.","B9":"Calendar 2025 revenue","C9":34900,"P9":"Net banking income (produit net bancaire), the bank’s top line, FY2025, about MAD 34,900m.","B10":"Net cash / (net debt)","C10":0,"P10":"A bank: deposits fund the balance sheet, so there is no separate net cash or net debt in this template. Set to zero.","B11":"Total debt","C11":0,"P11":"No financial debt is entered; the cost of capital is therefore all equity.","B12":"Risk-free rate (Morocco 10-yr)","C12":0.0367,"P12":"Morocco 10-year Treasury yield, about 3.67% in October 2026.","B13":"Beta","C13":1.1,"P13":"Judgment. Banks are the biggest sector in the MASI, so 1.1 is a mid-range beta measured against that index.","B14":"Equity risk premium","C14":0.045,"P14":"Judgment: mature-market equity risk premium, 4.5%, the same as the other models.","B15":"Country risk premium","C15":0.025,"P15":"Morocco country risk premium, about 2.5%, added on top of the mature-market premium.","B16":"Cost of equity","C16":0.1112,"P16":"Risk-free rate + beta × equity risk premium + country risk premium","B17":"Cost of debt (before tax)","C17":0.045,"P17":"Judgment: a large Moroccan bank funds itself near the risk-free rate plus a thin spread, about 4.5%.","B18":"Tax saving on interest","C18":0.4,"P18":"Moroccan banks pay corporate tax at 40%, so interest shields a lot of tax.","B21":"Tax rate","C21":0.4,"P21":"Moroccan corporate tax rate for banks and large firms, 40%.","B22":"Net investment (% of revenue)","C22":0.08,"P22":"Judgment: each MAD 1 of net new revenue ties up about 8 santimat of capital (regulatory capital plus fixed assets).","B23":"Terminal growth","C23":0.03,"P23":"Terminal growth of 3%: Moroccan nominal GDP grows in the 4–5% range, so 3% is a shade below.","B24":"Terminal ROIC","C24":0.12,"P24":"Terminal return on capital of 12%: a well-run bank earns a modest spread over its cost of capital.","B25":"Terminal operating margin","C25":0.5,"P25":"Long-run operating margin of 50%: the 2025 ratio was about 51.6%; it drifts down as competition grows.","C26":0.4,"D33":0.516,"P33":"Operating margin of about 51.6% in 2025, easing to 50% long run.","P31":"Revenue growth of about 6% fading to 3%: net banking income has grown mid-single digits in recent years.","E31":0.06,"E33":0.516,"F31":0.055,"F33":0.515,"G31":0.05,"G33":0.51,"H31":0.05,"H33":0.51,"I31":0.045,"I33":0.505,"J31":0.04,"J33":0.5,"K31":0.04,"K33":0.5,"L31":0.035,"L33":0.5,"M31":0.03,"M33":0.5,"N31":0.03,"N33":0.5},{"B2":"Maroc Telecom (IAM) · Independent 10-year DCF","B3":"MAD millions unless stated · valuation date 14 Oct 2026 · blue = input, black = formula, yellow = key judgment","C6":"2026-10-14","B7":"Share price (MAD)","C7":90.91,"P7":"Maroc Telecom share price, close around MAD 90.91 in October 2026, near the bottom of its 52-week range.","B8":"Shares outstanding (millions)","C8":879.1,"P8":"About 879.1m shares outstanding.","B9":"Calendar 2025 revenue","C9":36681,"P9":"FY2025 consolidated revenue, MAD 36,681m.","B10":"Net cash / (net debt)","C10":-17610,"P10":"Net debt at end-2025, about MAD 17,610m (gross debt 19,576 less cash).","B11":"Total debt","C11":19576,"P11":"Gross borrowings at end-2025, about MAD 19,576m, used to weight debt in the cost of capital.","B12":"Risk-free rate (Morocco 10-yr)","C12":0.0367,"P12":"Morocco 10-year Treasury yield, about 3.67% in October 2026.","B13":"Beta","C13":0.8,"P13":"Judgment. Telecoms are defensive; 0.8 against the MASI sits below the market.","B14":"Equity risk premium","C14":0.045,"P14":"Judgment: mature-market equity risk premium, 4.5%, the same as the other models.","B15":"Country risk premium","C15":0.025,"P15":"Morocco country risk premium, about 2.5%; most cash flow comes from Morocco and its West-African subsidiaries.","B16":"Cost of equity","C16":0.0977,"P16":"Risk-free rate + beta × equity risk premium + country risk premium","B17":"Cost of debt (before tax)","C17":0.047,"P17":"Judgment: a large, well-rated telecom issuer, about 4.7%.","B18":"Tax saving on interest","C18":0.2,"P18":"Moroccan corporate tax rate of 20%.","B21":"Tax rate","C21":0.2,"P21":"Moroccan corporate tax rate, 20%.","B22":"Sales-to-capital ratio","C22":1.2,"P22":"Sales-to-capital ratio of 1.2: each MAD 1 of extra revenue needs about 83 santimat of extra capital.","B23":"Terminal growth","C23":0.02,"P23":"Terminal growth of 2%: a mature telecom in a slow-growing market.","B24":"Terminal ROIC","C24":0.12,"P24":"Terminal return on capital of 12%: modest, reflecting the heavy network asset base.","B25":"Terminal operating margin","C25":0.3,"P25":"Long-run operating margin of 30%: 2025 adjusted EBITA margin was about 31.5% after stripping a one-off provision reversal.","C26":0.2,"D33":0.315,"P33":"Operating margin of about 31.5% easing to 30%: reported 2025 EBITA was flattered by a non-recurring reversal of the Wana provision, so the base is normalised down.","P31":"Revenue growth of about 5% fading to 2%: low single-digit growth in Morocco and West Africa.","E31":0.05,"E33":0.315,"F31":0.04,"F33":0.315,"G31":0.035,"G33":0.32,"H31":0.03,"H33":0.32,"I31":0.03,"I33":0.325,"J31":0.025,"J33":0.325,"K31":0.025,"K33":0.325,"L31":0.02,"L33":0.31,"M31":0.02,"M33":0.31,"N31":0.02,"N33":0.3},{"B2":"Cosumar (CSR) · Independent 10-year DCF","B3":"MAD millions unless stated · valuation date 14 Oct 2026 · blue = input, black = formula, yellow = key judgment","C6":"2026-10-14","B7":"Share price (MAD)","C7":175,"P7":"Cosumar share price, close around MAD 175 in mid-October 2026 (MAD 174.50–177 range).","B8":"Shares outstanding (millions)","C8":94.49,"P8":"About 94.49m shares outstanding (94,487,143).","B9":"Calendar 2025 revenue","C9":10487,"P9":"FY2025 consolidated revenue, about MAD 10,487m.","B10":"Net cash / (net debt)","C10":1200,"P10":"Estimated net cash of about MAD 1,200m: a sugar refiner that is seasonally cash-rich. Treat as approximate.","B11":"Total debt","C11":2500,"P11":"Estimated gross borrowings of about MAD 2,500m, used only to weight debt in the cost of capital.","B12":"Risk-free rate (Morocco 10-yr)","C12":0.0367,"P12":"Morocco 10-year Treasury yield, about 3.67% in October 2026.","B13":"Beta","C13":0.6,"P13":"Judgment. Sugar demand is stable and regulated; a low beta of 0.6 against the MASI.","B14":"Equity risk premium","C14":0.045,"P14":"Judgment: mature-market equity risk premium, 4.5%, the same as the other models.","B15":"Country risk premium","C15":0.025,"P15":"Morocco country risk premium, about 2.5%.","B16":"Cost of equity","C16":0.0887,"P16":"Risk-free rate + beta × equity risk premium + country risk premium","B17":"Cost of debt (before tax)","C17":0.052,"P17":"Judgment: a steady diversified issuer, about 5.2%.","B18":"Tax saving on interest","C18":0.2,"P18":"Moroccan corporate tax rate of 20%.","B21":"Tax rate","C21":0.2,"P21":"Moroccan corporate tax rate, 20%.","B22":"Sales-to-capital ratio","C22":1.4,"P22":"Sales-to-capital ratio of 1.4: each MAD 1 of extra revenue needs about 71 santimat of extra capital.","B23":"Terminal growth","C23":0.025,"P23":"Terminal growth of 2.5%: sugar volumes grow with population, and prices are set by policy.","B24":"Terminal ROIC","C24":0.12,"P24":"Terminal return on capital of 12%.","B25":"Terminal operating margin","C25":0.115,"P25":"Long-run operating margin of about 11.5%, close to the FY2025 reported level of about 11%.","C26":0.2,"D33":0.11,"P33":"Operating margin of about 11% nudging to 11.8%: the FY2025 operating margin was around 11%.","P31":"Revenue growth of about 6% fading to 3%: steady volumes plus sugar-price effects.","E31":0.06,"E33":0.11,"F31":0.05,"F33":0.112,"G31":0.045,"G33":0.114,"H31":0.04,"H33":0.115,"I31":0.04,"I33":0.116,"J31":0.035,"J33":0.117,"K31":0.03,"K33":0.118,"L31":0.03,"L33":0.118,"M31":0.03,"M33":0.118,"N31":0.03,"N33":0.118},{"B2":"Managem (MNG) · Independent 10-year DCF","B3":"MAD millions unless stated · valuation date 14 Oct 2026 · blue = input, black = formula, yellow = key judgment","C6":"2026-10-14","B7":"Share price (MAD)","C7":1514,"P7":"Managem share price, around MAD 1,514 on 16 October 2026, after a 10-for-1 split on 27 July 2026 left the price ten times lower.","B8":"Shares outstanding (millions)","C8":118.65,"P8":"About 118.65m shares (118,646,760) after the July 2026 10-for-1 split.","B9":"Calendar 2025 revenue","C9":13694,"P9":"FY2025 consolidated revenue, about MAD 13,694m, before the 2026 jump from the new Tizert (copper) and Boto (gold) mines.","B10":"Net cash / (net debt)","C10":-12674,"P10":"Net debt at end-2025, about MAD 12,674m, reflecting heavy spending on the new mines.","B11":"Total debt","C11":16000,"P11":"Estimated gross borrowings of about MAD 16,000m, used only to weight debt in the cost of capital.","B12":"Risk-free rate (Morocco 10-yr)","C12":0.0367,"P12":"Morocco 10-year Treasury yield, about 3.67% in October 2026.","B13":"Beta","C13":1.1,"P13":"Judgment. A miner levered to metal prices; a high beta of 1.1 against the MASI.","B14":"Equity risk premium","C14":0.045,"P14":"Judgment: mature-market equity risk premium, 4.5%, the same as the other models.","B15":"Country risk premium","C15":0.025,"P15":"Morocco country risk premium, about 2.5%; Managem also mines in Senegal, Gabon and the DRC.","B16":"Cost of equity","C16":0.1112,"P16":"Risk-free rate + beta × equity risk premium + country risk premium","B17":"Cost of debt (before tax)","C17":0.062,"P17":"Judgment: a leveraged miner, about 6.2%.","B18":"Tax saving on interest","C18":0.2,"P18":"Moroccan corporate tax rate of 20% on the domestic share; a 25% blended rate is used below for the group.","B21":"Tax rate","C21":0.25,"P21":"Blended group tax rate of 25%: Managem earns in several African tax jurisdictions.","B22":"Sales-to-capital ratio","C22":1.2,"P22":"Sales-to-capital ratio of 1.2: mining is capital intensive, so each MAD 1 of extra revenue needs about 83 santimat of extra capital.","B23":"Terminal growth","C23":0.025,"P23":"Terminal growth of 2.5%: long-run metal demand grows with the world economy.","B24":"Terminal ROIC","C24":0.13,"P24":"Terminal return on capital of 13%: a mid-cycle mining return.","B25":"Terminal operating margin","C25":0.3,"P25":"Long-run operating margin of 30%: 2025 was about 29%, and 2026 margins jump on high metal prices before fading.","C26":0.25,"D33":0.29,"P33":"Operating margin spikes to about 40% in 2026 on high metal prices and the new low-cost mines, then fades towards 30% mid-cycle.","P31":"Revenue growth of 72% in 2026, then fading: H1 2026 revenue more than doubled on the new mines and high metal prices; that step cannot repeat.","E31":0.72,"E33":0.4,"F31":0.2,"F33":0.36,"G31":0.12,"G33":0.34,"H31":0.08,"H33":0.33,"I31":0.06,"I33":0.32,"J31":0.04,"J33":0.31,"K31":0.04,"K33":0.31,"L31":0.03,"L33":0.3,"M31":0.03,"M33":0.3,"N31":0.03,"N33":0.3}];
-var BEAR = { ATW: [0.35, 'long-run margin 35%'], IAM: [0.22, 'long-run margin 22%'], CSR: [0.08, 'long-run margin 8%'], MNG: [0.18, 'long-run margin 18%'] };
-var LABELS = { B7: /^share price/i, B8: /^shares/i, B9: /revenue/i, B10: /net cash/i, B11: /total debt/i, B12: /risk-free/i, B13: /^beta/i,
-               B14: /equity risk premium/i, B17: /cost of debt/i, B21: /tax rate/i, B22: /sales-to-capital|net investment/i,
-               B23: /terminal growth/i, B24: /terminal roic/i, B25: /terminal operating margin/i };
+var BUNDLE = [{"B2":"Attijariwafa Bank (ATW) · Independent 10-year DCF","B3":"MAD millions unless stated · valuation date 14 Oct 2026 · blue = input, black = formula, yellow = key judgment","C6":"2026-10-14","B7":"Share price (MAD)","C7":670,"P7":"Cours de clôture d'Attijariwafa Bank à la Bourse de Casablanca, autour de 670 MAD en octobre 2026.","B8":"Shares outstanding (millions)","C8":215.14,"P8":"Environ 215,14 millions d'actions composant le capital social de la banque.","B9":"Calendar 2025 revenue","C9":34900,"P9":"Produit Net Bancaire (PNB) consolidé pour l'exercice 2025, environ 34 900 millions MAD.","B10":"Net cash / (net debt)","C10":0,"P10":"Banque : les dépôts des clients financent le bilan, aucune dette nette structurelle dans ce modèle. Fixée à zéro.","B11":"Total debt","C11":0,"P11":"Aucune dette financière brute modélisée ; le coût du capital repose intégralement sur les fonds propres.","B12":"Risk-free rate (Morocco 10-yr)","C12":0.0367,"P12":"Rendement des Bons du Trésor marocains à 10 ans (BDT), environ 3,67 % en octobre 2026.","B13":"Beta","C13":1.1,"P13":"Bêta de 1,1 par rapport au MASI : Attijariwafa Bank est la plus grande capitalisation du marché boursier marocain.","B14":"Equity risk premium","C14":0.045,"P14":"Prime de risque actions du marché mature de référence, retenue à 4,5 %.","B15":"Country risk premium","C15":0.025,"P15":"Prime de risque pays (PRP) Maroc de 2,5 %, ajoutée à la prime de marché de référence.","B16":"Cost of equity","C16":0.1112,"P16":"Taux sans risque + bêta × prime de risque actions + prime de risque pays","B17":"Cost of debt (before tax)","C17":0.045,"P17":"Coût de refinancement bancaire de référence, estimé proche du taux sans risque plus un spread étroit (4,5 %).","B18":"Tax saving on interest","C18":0.4,"P18":"Le taux d'IS bancaire au Maroc est fixé à 40 %, générant une économie d'impôt substantielle sur la dette.","B21":"Tax rate","C21":0.4,"P21":"Taux d'IS applicable aux établissements de crédit et grandes entreprises au Maroc : 40 %.","B22":"Net investment (% of revenue)","C22":0.08,"P22":"Intensité capitalistique : chaque dirham de PNB additionnel mobilise environ 8 centimes de capital réglementaire et d'investissements.","B23":"Terminal growth","C23":0.03,"P23":"Croissance terminale à long terme de 3 %, en ligne avec la croissance tendancielle du PIB marocain.","B24":"Terminal ROIC","C24":0.12,"P24":"Rentabilité normative des fonds propres (ROIC) de 12 % : rentabilité soutenue avec prime sur le coût du capital.","B25":"Terminal operating margin","C25":0.5,"P25":"Marge d'exploitation normative (résultat brut d'exploitation / PNB) de 50 %, contre 51,6 % en 2025.","C26":0.4,"D33":0.516,"P33":"Marge d'exploitation de 51,6 % en 2025 convergeant progressivement vers 50 % à long terme.","P31":"Croissance annuelle du PNB d'environ 6 % décélérant progressivement vers 3 % à terme.","E31":0.06,"E33":0.516,"F31":0.055,"F33":0.515,"G31":0.05,"G33":0.51,"H31":0.05,"H33":0.51,"I31":0.045,"I33":0.505,"J31":0.04,"J33":0.5,"K31":0.04,"K33":0.5,"L31":0.035,"L33":0.5,"M31":0.03,"M33":0.5,"N31":0.03,"N33":0.5},{"B2":"Maroc Telecom (IAM) · Independent 10-year DCF","B3":"MAD millions unless stated · valuation date 14 Oct 2026 · blue = input, black = formula, yellow = key judgment","C6":"2026-10-14","B7":"Share price (MAD)","C7":90.91,"P7":"Cours de clôture de Maroc Telecom à la Bourse de Casablanca, autour de 90,91 MAD en octobre 2026.","B8":"Shares outstanding (millions)","C8":879.1,"P8":"Environ 879,1 millions d'actions en circulation composant le capital social.","B9":"Calendar 2025 revenue","C9":36681,"P9":"Chiffre d'affaires consolidé 2025 de 36 681 millions MAD.","B10":"Net cash / (net debt)","C10":-17610,"P10":"Dette nette à fin 2025 d'environ 17 610 millions MAD (dette brute de 19 576 M MAD moins trésorerie).","B11":"Total debt","C11":19576,"P11":"Dette brute consolidée d'environ 19 576 millions MAD, utilisée pour la pondération du CMPC.","B12":"Risk-free rate (Morocco 10-yr)","C12":0.0367,"P12":"Rendement des Bons du Trésor marocains à 10 ans (BDT), environ 3,67 % en octobre 2026.","B13":"Beta","C13":0.8,"P13":"Bêta défensif de 0,8 par rapport au MASI : forte visibilité et résilience des flux télécoms.","B14":"Equity risk premium","C14":0.045,"P14":"Prime de risque actions du marché mature de référence, retenue à 4,5 %.","B15":"Country risk premium","C15":0.025,"P15":"Prime de risque pays de 2,5 % (activités au Maroc et filiales Moov Africa en Afrique de l'Ouest).","B16":"Cost of equity","C16":0.0977,"P16":"Taux sans risque + bêta × prime de risque actions + prime de risque pays","B17":"Cost of debt (before tax)","C17":0.047,"P17":"Coût de la dette obligataire et bancaire d'un émetteur de premier rang, environ 4,7 %.","B18":"Tax saving on interest","C18":0.2,"P18":"Taux d'imposition effectif sur les sociétés (IS) de 20 %.","B21":"Tax rate","C21":0.2,"P21":"Taux d'IS société de 20 %.","B22":"Sales-to-capital ratio","C22":1.2,"P22":"Ratio Chiffre d'affaires / Capital de 1,2 : chaque dirham de CA additionnel nécessite environ 83 centimes d'investissements.","B23":"Terminal growth","C23":0.02,"P23":"Croissance terminale de 2 %, reflétant la maturité du marché télécom.","B24":"Terminal ROIC","C24":0.12,"P24":"ROIC normatif de 12 % compte tenu de la lourdeur des investissements réseau (5G et fibre optique).","B25":"Terminal operating margin","C25":0.3,"P25":"Marge d'exploitation normative de 30 % (EBITA ajusté normalisé).","C26":0.2,"D33":0.315,"P33":"Marge opérationnelle normalisée de 31,5 % s'ajustant vers 30 % à long terme.","P31":"Croissance annuelle du CA d'environ 5 % convergeant vers 2 % à terme.","E31":0.05,"E33":0.315,"F31":0.04,"F33":0.315,"G31":0.035,"G33":0.32,"H31":0.03,"H33":0.32,"I31":0.03,"I33":0.325,"J31":0.025,"J33":0.325,"K31":0.025,"K33":0.325,"L31":0.02,"L33":0.31,"M31":0.02,"M33":0.31,"N31":0.02,"N33":0.3},{"B2":"Cosumar (CSR) · Independent 10-year DCF","B3":"MAD millions unless stated · valuation date 14 Oct 2026 · blue = input, black = formula, yellow = key judgment","C6":"2026-10-14","B7":"Share price (MAD)","C7":175,"P7":"Cours de clôture de Cosumar autour de 175 MAD à la Bourse de Casablanca en octobre 2026.","B8":"Shares outstanding (millions)","C8":94.49,"P8":"Environ 94,49 millions d'actions en circulation (94 487 143 actions).","B9":"Calendar 2025 revenue","C9":10487,"P9":"Chiffre d'affaires consolidé 2025 d'environ 10 487 millions MAD.","B10":"Net cash / (net debt)","C10":1200,"P10":"Trésorerie nette estimée à environ 1 200 millions MAD : raffineur sucrier structurellement générateur de cash.","B11":"Total debt","C11":2500,"P11":"Dette financière brute estimée à 2 500 millions MAD pour la pondération du CMPC.","B12":"Risk-free rate (Morocco 10-yr)","C12":0.0367,"P12":"Rendement des Bons du Trésor marocains à 10 ans (BDT), environ 3,67 % en octobre 2026.","B13":"Beta","C13":0.6,"P13":"Bêta défensif de 0,6 par rapport au MASI : secteur agroalimentaire régulé, de première nécessité et très résilient.","B14":"Equity risk premium","C14":0.045,"P14":"Prime de risque actions du marché mature de référence, retenue à 4,5 %.","B15":"Country risk premium","C15":0.025,"P15":"Prime de risque pays (PRP) Maroc d'environ 2,5 %.","B16":"Cost of equity","C16":0.0887,"P16":"Taux sans risque + bêta × prime de risque actions + prime de risque pays","B17":"Cost of debt (before tax)","C17":0.052,"P17":"Coût de la dette d'un émetteur agro-industriel solide, environ 5,2 %.","B18":"Tax saving on interest","C18":0.2,"P18":"Taux d'imposition effectif sur les sociétés (IS) de 20 %.","B21":"Tax rate","C21":0.2,"P21":"Taux d'IS société de 20 %.","B22":"Sales-to-capital ratio","C22":1.4,"P22":"Ratio Chiffre d'affaires / Capital de 1,4 : besoin d'environ 71 centimes de capital par dirham de CA supplémentaire.","B23":"Terminal growth","C23":0.025,"P23":"Croissance terminale de 2,5 % corrélée à la démographie et à la consommation sucrière nationale.","B24":"Terminal ROIC","C24":0.12,"P24":"Rentabilité normative des capitaux investis (ROIC) de 12 %.","B25":"Terminal operating margin","C25":0.115,"P25":"Marge d'exploitation normative de 11,5 %, proche du niveau de 11 % rapporté en 2025.","C26":0.2,"D33":0.11,"P33":"Marge opérationnelle d'environ 11 % progressant vers 11,8 % à terme.","P31":"Croissance annuelle du CA de 6 % convergeant vers 3 % à terme.","E31":0.06,"E33":0.11,"F31":0.05,"F33":0.112,"G31":0.045,"G33":0.114,"H31":0.04,"H33":0.115,"I31":0.04,"I33":0.116,"J31":0.035,"J33":0.117,"K31":0.03,"K33":0.118,"L31":0.03,"L33":0.118,"M31":0.03,"M33":0.118,"N31":0.03,"N33":0.118},{"B2":"Managem (MNG) · Independent 10-year DCF","B3":"MAD millions unless stated · valuation date 14 Oct 2026 · blue = input, black = formula, yellow = key judgment","C6":"2026-10-14","B7":"Share price (MAD)","C7":1514,"P7":"Cours de clôture de Managem autour de 1 514 MAD en octobre 2026, après division du nominal par 10 le 27 juillet 2026.","B8":"Shares outstanding (millions)","C8":118.65,"P8":"Environ 118,65 millions d'actions en circulation (118 646 760) post-division du nominal.","B9":"Calendar 2025 revenue","C9":13694,"P9":"Chiffre d'affaires consolidé 2025 de 13 694 millions MAD (avant pleine contribution des mines de Tizert et Boto).","B10":"Net cash / (net debt)","C10":-12674,"P10":"Dette nette à fin 2025 d'environ 12 674 millions MAD liée aux investissements miniers majeurs.","B11":"Total debt","C11":16000,"P11":"Dette financière brute estimée à 16 000 millions MAD pour la pondération du CMPC.","B12":"Risk-free rate (Morocco 10-yr)","C12":0.0367,"P12":"Rendement des Bons du Trésor marocains à 10 ans (BDT), environ 3,67 % en octobre 2026.","B13":"Beta","C13":1.1,"P13":"Bêta de 1,1 : valeur minière cyclique fortement corrélée aux cours des métaux (cuivre, or, cobalt).","B14":"Equity risk premium","C14":0.045,"P14":"Prime de risque actions du marché mature de référence, retenue à 4,5 %.","B15":"Country risk premium","C15":0.025,"P15":"Prime de risque pays de 2,5 % (implantations au Maroc, Sénégal, Gabon et RDC).","B16":"Cost of equity","C16":0.1112,"P16":"Taux sans risque + bêta × prime de risque actions + prime de risque pays","B17":"Cost of debt (before tax)","C17":0.062,"P17":"Coût de la dette d'un groupe minier endetté, estimé à 6,2 %.","B18":"Tax saving on interest","C18":0.2,"P18":"Taux d'IS de 20 % sur la quote-part marocaine ; taux effectif global moyen de 25 % retenu pour le groupe.","B21":"Tax rate","C21":0.25,"P21":"Taux d'IS moyen consolidé du groupe de 25 % (multiples juridictions fiscales africaines).","B22":"Sales-to-capital ratio","C22":1.2,"P22":"Ratio Chiffre d'affaires / Capital de 1,2 : secteur minier à forte intensité capitalistique.","B23":"Terminal growth","C23":0.025,"P23":"Croissance terminale de 2,5 % alignée sur la demande mondiale de métaux de transition.","B24":"Terminal ROIC","C24":0.13,"P24":"ROIC normatif de 13 % en milieu de cycle minier.","B25":"Terminal operating margin","C25":0.3,"P25":"Marge d'exploitation normative de 30 % à long terme.","C26":0.25,"D33":0.29,"P33":"Marge d'exploitation atteignant environ 40 % en 2026 puis convergeant vers 30 % en vitesse de croisière.","P31":"Croissance exceptionnelle du CA de 72 % en 2026 (démarrage de Tizert et Boto) puis normalisation progressive vers 3 %.","E31":0.72,"E33":0.4,"F31":0.2,"F33":0.36,"G31":0.12,"G33":0.34,"H31":0.08,"H33":0.33,"I31":0.06,"I33":0.32,"J31":0.04,"J33":0.31,"K31":0.04,"K33":0.31,"L31":0.03,"L33":0.3,"M31":0.03,"M33":0.3,"N31":0.03,"N33":0.3}];
+var BEAR = { ATW: [0.35, 'marge normative 35 %'], IAM: [0.22, 'marge normative 22 %'], CSR: [0.08, 'marge normative 8 %'], MNG: [0.18, 'marge normative 18 %'] };
+var LABELS = {
+  B7: /share price|cours/i,
+  B8: /shares|actions/i,
+  B9: /revenue|chiffre d'affaires|produit net bancaire|pnb/i,
+  B10: /net cash|trésorerie nette|dette nette/i,
+  B11: /total debt|dette totale|dette brute/i,
+  B12: /risk-free|sans risque/i,
+  B13: /beta|bêta/i,
+  B14: /equity risk premium|prime de risque/i,
+  B17: /cost of debt|coût de la dette/i,
+  B21: /tax rate|taux d'is|taux d'impôt/i,
+  B22: /sales-to-capital|net investment|investissement/i,
+  B23: /terminal growth|croissance.*(infini|terminale)/i,
+  B24: /terminal roic|roic/i,
+  B25: /terminal operating margin|marge.*(normative|terminale|exploitation)/i
+};
 function short(t) {
   if (!t) return '';
   t = String(t).replace(/^Judgment[.:]\s*/i, '');
@@ -328,9 +345,16 @@ function short(t) {
 }
 function factRows(co) {
   var f = co.fact;
-  return [['Price, ' + niceDate(f.date), money(co, f.price, 2)], ['Shares outstanding', num(f.shares, 1) + ' million'], ['Last full-year revenue', num(f.rev0, 1) + ' million'],
-          ['Last full-year operating margin', pc(f.m0)], [f.netCash < 0 ? 'Net debt' : 'Net cash', num(Math.abs(f.netCash), 1) + ' million'],
-          ['Total debt (for the debt weight)', num(f.debt, 1) + ' million'], ['Risk-free rate, Morocco 10-year', pc(f.rf, 2)], ['Tax saving on interest', pc(f.tShield, 0)]];
+  return [
+    ['Cours au ' + niceDate(f.date), money(co, f.price, 2)],
+    ['Nombre d\'actions en circulation', num(f.shares, 1) + ' millions'],
+    ['Dernier chiffre d\'affaires / PNB', num(f.rev0, 1) + ' millions ' + (co.cur || 'MAD')],
+    ['Dernière marge opérationnelle', pc(f.m0)],
+    [f.netCash < 0 ? 'Dette nette' : 'Trésorerie nette', num(Math.abs(f.netCash), 1) + ' millions ' + (co.cur || 'MAD')],
+    ['Dette brute totale (pondération CMPC)', num(f.debt, 1) + ' millions ' + (co.cur || 'MAD')],
+    ['Taux sans risque (BDT Maroc 10 ans)', pc(f.rf, 2)],
+    ['Économie d\'impôt sur intérêts (IS)', pc(f.tShield, 0)]
+  ];
 }
 function fromCells(c, source) {
   var bad = Object.keys(LABELS).filter(function (k) { return !LABELS[k].test(String(c[k] || '')); });
@@ -338,7 +362,7 @@ function fromCells(c, source) {
   ['C7', 'C8', 'C9', 'C10', 'C11', 'C12', 'C13', 'C14', 'C17', 'C21', 'C22', 'C23', 'C24', 'C25', 'D33']
     .concat(col.map(function (x) { return x + '31'; }), col.map(function (x) { return x + '33'; }))
     .forEach(function (k) { if (typeof c[k] !== 'number') bad.push(k); });
-  if (bad.length) throw new Error('This workbook is not in the DCF template (cells not as expected: ' + bad.slice(0, 6).join(', ') + '). Add the company by hand instead.');
+  if (bad.length) throw new Error('Ce classeur ne respecte pas le modèle DCF requis (cellules non conformes : ' + bad.slice(0, 6).join(', ') + '). Vous pouvez ajouter la société manuellement.');
   var title = String(c.B2 || 'Imported company').split(' · ')[0], tk = (title.match(/\(([^)]+)\)\s*$/) || [])[1] || '';
   var name = title.replace(/\s*\([^)]*\)\s*$/, '').replace(/,? (ASA|S\.A\.|plc|Inc\.?|N\.V\.)$/, '').replace(/\.com$/, '').split(' - ').pop();
   var co = {
@@ -352,7 +376,7 @@ function fromCells(c, source) {
             g: col.map(function (x) { return c[x + '31']; }), m: col.map(function (x) { return c[x + '33']; }) },
     notes: { beta: short(c.P13), erp: short(c.P14), crp: short(c.P15), kd: short(c.P17), tax: short(c.P21), inv: short(c.P22), tg: short(c.P23), roic: short(c.P24), lr: short(c.P25), g: short(c.P31), m: short(c.P33) },
     sheetValue: typeof c.D51 === 'number' ? c.D51 : null,
-    crpLabel: String(c.B15 || 'Country risk premium')
+    crpLabel: (!c.B15 || /country risk/i.test(c.B15)) ? 'Prime de risque pays (PRP)' : String(c.B15)
   };
   if (BEAR[tk]) { co.bear = { lr: BEAR[tk][0] }; co.bearNote = BEAR[tk][1]; }
   co.facts = factRows(co);
@@ -361,13 +385,13 @@ function fromCells(c, source) {
 function fromForm(v) {
   var f = { date: v.date, price: +v.price, shares: +v.shares, rev0: +v.rev0, m0: v.m0 / 100, netCash: +v.netCash, debt: +v.debt, rf: v.rf / 100, tShield: v.tShield / 100, reinvest: v.reinvest };
   var tk = v.ticker.trim().toUpperCase(), m0 = f.m0;
-  var co = { id: tk, name: v.name.trim(), ticker: tk, cur: v.cur.trim(), unit: 'Millions', source: 'Added by hand', acc: '', fact: f, sheetValue: null, crpLabel: 'Country risk premium',
+  var co = { id: tk, name: v.name.trim(), ticker: tk, cur: v.cur.trim(), unit: 'Millions', source: 'Ajoutée manuellement', acc: '', fact: f, sheetValue: null, crpLabel: 'Prime de risque pays (PRP)',
     base: { beta: 1, erp: 0.045, crp: 0, kd: f.rf + 0.015, tax: 0.25, taxT: 0.25, inv: v.reinvest === 'stc' ? 2 : 0.03, tg: 0.02, roic: 0.12, lr: m0,
             g: [0.05, 0.05, 0.05, 0.05, 0.04, 0.04, 0.03, 0.03, 0.02, 0.02], m: [m0, m0, m0, m0, m0, m0, m0, m0, m0, m0] },
-    notes: { beta: 'Placeholder: 1.0 is the market average.', erp: 'Placeholder: the bundled models use 4.5%.', kd: 'Placeholder: risk-free rate plus 1.5%.',
-             tax: 'Placeholder: set the company’s effective tax rate.', g: 'Placeholders: 5% fading to 2%. Use analyst estimates for the first two years.',
-             m: 'Placeholders: every year starts at the last reported margin.', lr: 'Placeholder: the last reported margin. Use a mid-cycle figure.',
-             inv: v.reinvest === 'stc' ? 'Placeholder: each extra 2 of sales needs 1 of new capital.' : 'Placeholder: 3% of revenue.' } };
+    notes: { beta: 'Valeur de départ : 1,0 correspond à la moyenne du marché MASI.', erp: 'Valeur de référence : 4,5 % retenus pour le marché actions.', kd: 'Taux sans risque + marge d\'emprunt (ex. + 1,5 %).',
+             tax: 'Taux effectif d\'IS de l\'entreprise.', g: 'Prévisions : 5 % décélérant à 2 %. Ajustez selon le consensus analystes.',
+             m: 'Chaque année démarre à la dernière marge rapportée.', lr: 'Marge opérationnelle cible en vitesse de croisière.',
+             inv: v.reinvest === 'stc' ? 'Pour chaque MAD 2 de CA additionnel, MAD 1 de capital investi est requis.' : '3 % du chiffre d\'affaires réinvesti annuellement.' } };
   co.facts = factRows(co);
   return co;
 }
@@ -385,7 +409,7 @@ function moneyHtml(c, v, d) {
 function mil(v) { return (v < 0 ? '−' : '') + Math.abs(v).toLocaleString('en-US', { maximumFractionDigits: 0 }); }
 function pc(v, d) { return (v < 0 ? '−' : '') + Math.abs(v * 100).toFixed(d == null ? 1 : d) + '%'; }
 function signed(v) { return (v >= 0 ? '+' : '−') + Math.abs(v * 100).toFixed(1) + '%'; }
-function niceDate(s) { var d = s.split('-'); return ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][d[1] - 1] + ' ' + (+d[2]) + ', ' + d[0]; }
+function niceDate(s) { var d = s.split('-'); var m = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']; return (+d[2]) + ' ' + m[d[1] - 1] + ' ' + d[0]; }
 function esc(s) { return String(s).replace(/[&<>"]/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]; }); }
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
 function store(k, v) {
@@ -393,7 +417,7 @@ function store(k, v) {
 }
 
 // ---- companies -------------------------------------------------------------------
-var LIST = BUNDLE.map(function (c) { return fromCells(c, 'Bundled example'); });
+var LIST = BUNDLE.map(function (c) { return fromCells(c, 'Modèle intégré'); });
 var CUSTOM = store('custom') || [];
 // an imported or added company with the same ticker replaces the bundled one
 function all() { var ids = CUSTOM.map(function (c) { return c.id; }); return LIST.filter(function (c) { return ids.indexOf(c.id) < 0; }).concat(CUSTOM); }
@@ -415,7 +439,7 @@ function choose(id) {
   if (saved && saved.g && saved.m && saved.m.length === 10) A = Object.assign(A, saved);
   document.body.dataset.acc = C.acc;
   var bear = document.getElementById('bear');
-  bear.hidden = !C.bear; if (C.bear) bear.textContent = 'Bear case: ' + C.bearNote;
+  bear.hidden = !C.bear; if (C.bear) bear.textContent = 'Scénario prudent : ' + C.bearNote;
   document.getElementById('remove').hidden = !CUSTOM.some(function (c) { return c.id === C.id; });
   store('co', C.id);
   chips(); buildForm(); render();
@@ -450,16 +474,16 @@ function years(k, what) {
   return h + '</div>' + (C.notes[k] ? '<p class="gnote">' + esc(C.notes[k]) + '</p>' : '');
 }
 function buildForm() {
-  var inv = C.fact.reinvest === 'pct' ? ['inv', 'Net investment, % of revenue', 'pct'] : ['inv', 'Sales-to-capital ratio', 'x'];
+  var inv = C.fact.reinvest === 'pct' ? ['inv', 'Investissement net (% du CA / PNB)', 'pct'] : ['inv', 'Ratio Chiffre d\'affaires / Capital investi', 'x'];
   document.getElementById('form').innerHTML =
-    '<div class="grp"><h3>Discount rate</h3>' + field('beta', 'Beta', 'x') + field('erp', 'Equity risk premium', 'pct') +
-      field('crp', esc(C.crpLabel), 'pct') + field('kd', 'Cost of debt, before tax', 'pct') + '<div id="waccbox" style="margin-top:8px"></div></div>' +
-    '<div class="grp"><h3>Revenue growth</h3>' + years('g', 'Revenue growth') + '</div>' +
-    '<div class="grp"><h3>Operating margin</h3>' + years('m', 'Operating margin') + '</div>' +
-    '<div class="grp"><h3>Long run and terminal value</h3>' +
-      field('lr', 'Long-run operating margin', 'pct', 'Changing it moves 2030–2035 and the terminal value together.') +
-      field('tax', 'Tax rate, 2026–2035', 'pct') + field('taxT', 'Tax rate in the terminal value', 'pct') + field(inv[0], inv[1], inv[2]) +
-      field('tg', 'Terminal growth', 'pct') + field('roic', 'Return on capital in the terminal value', 'pct') + '</div>';
+    '<div class="grp"><h3>Coût du capital & Actualisation (CMPC)</h3>' + field('beta', 'Bêta (sensibilité MASI)', 'x') + field('erp', 'Prime de risque marché actions', 'pct') +
+      field('crp', esc(C.crpLabel || 'Prime de risque pays (PRP)'), 'pct') + field('kd', 'Coût de la dette avant impôt (Kd)', 'pct') + '<div id="waccbox" style="margin-top:8px"></div></div>' +
+    '<div class="grp"><h3>Croissance prévisionnelle du CA / PNB</h3>' + years('g', 'Croissance') + '</div>' +
+    '<div class="grp"><h3>Marge opérationnelle prévisionnelle (REX)</h3>' + years('m', 'Marge') + '</div>' +
+    '<div class="grp"><h3>Marge normative & Valeur terminale</h3>' +
+      field('lr', 'Marge d\'exploitation normative', 'pct', 'La modifier ajuste simultanément les marges 2030–2035 et la valeur terminale.') +
+      field('tax', 'Taux d\'IS prévisionnel (2026–2035)', 'pct') + field('taxT', 'Taux d\'IS normatif (valeur terminale)', 'pct') + field(inv[0], inv[1], inv[2]) +
+      field('tg', 'Taux de croissance à l\'infini (g)', 'pct') + field('roic', 'Rentabilité du capital investi (ROIC normatif)', 'pct') + '</div>';
 }
 function syncInputs() {
   document.querySelectorAll('#form input').forEach(function (el) {
@@ -474,49 +498,54 @@ function render() {
   var f = C.fact, r = dcf(f, A), b = dcf(f, C.base), ok = r.valid && isFinite(r.value), up = r.value / f.price - 1;
   document.getElementById('warn').classList.toggle('on', !r.valid);
   document.getElementById('coname').textContent = C.name + (C.ticker ? ' (' + C.ticker + ')' : '');
-  document.getElementById('cosrc').textContent = C.source + (C.sheetValue != null ? (Math.abs(b.value - C.sheetValue) < 0.005 ? ', matches the sheet' : ', sheet shows ' + money(C, C.sheetValue, 2)) : '');
+  var srcLabel = C.source === 'Bundled example' ? 'Modèle intégré' : C.source === 'Added by hand' ? 'Ajoutée manuellement' : C.source;
+  document.getElementById('cosrc').textContent = srcLabel + (C.sheetValue != null ? (Math.abs(b.value - C.sheetValue) < 0.005 ? ', conforme au classeur' : ', classeur : ' + money(C, C.sheetValue, 2)) : '');
   document.getElementById('r-val').innerHTML = ok ? moneyHtml(C, r.value, 2) : '—';
-  document.getElementById('r-vs').innerHTML = ok ? (up >= 0 ? 'Above' : 'Below') + ' the price by <b>' + pc(Math.abs(up)) + '</b>' : 'Check the warning';
+  document.getElementById('r-vs').innerHTML = ok ? (up >= 0 ? 'Surcote de <b>' + pc(Math.abs(up)) + '</b> vs cours' : 'Décote de <b>' + pc(Math.abs(up)) + '</b> vs cours') : 'Vérifiez l\'alerte';
   document.getElementById('r-px').innerHTML = moneyHtml(C, f.price, 2);
   document.getElementById('r-pxs').textContent = niceDate(f.date);
   document.getElementById('r-base').innerHTML = b.valid ? moneyHtml(C, b.value, 2) : '—';
   var dv = r.value / b.value - 1;
-  document.getElementById('r-diff').innerHTML = ok ? (Math.abs(dv) < 5e-5 ? 'You are on the base case' : 'Your case is <span class="' + (dv >= 0 ? 'up' : 'dn') + '">' + signed(dv) + '</span> vs base') : '';
+  document.getElementById('r-diff').innerHTML = ok ? (Math.abs(dv) < 5e-5 ? 'Scénario de base actif' : 'Votre scénario : <span class="' + (dv >= 0 ? 'up' : 'dn') + '">' + signed(dv) + '</span> vs base') : '';
   var im = ok ? impliedMargin(f, A) : NaN;
-  document.getElementById('r-imp').innerHTML = !isFinite(im) ? '—' : im > 1 ? '<span class="num">Over 100%</span>' : '<span class="num">' + (im < 0 ? '−' : '') + Math.abs(im * 100).toFixed(1) + '</span><span class="cur">%</span>';
-  document.getElementById('r-imps').textContent = im > 1 ? 'No margin gets there: the price needs faster growth. Yours: ' + pc(A.lr) : 'Yours: ' + pc(A.lr);
+  document.getElementById('r-imp').innerHTML = !isFinite(im) ? '—' : im > 1 ? '<span class="num">&gt; 100 %</span>' : '<span class="num">' + (im < 0 ? '−' : '') + Math.abs(im * 100).toFixed(1) + '</span><span class="cur">%</span>';
+  document.getElementById('r-imps').textContent = im > 1 ? 'Aucune marge ne suffit : le cours exige une croissance plus forte. Votre marge : ' + pc(A.lr) : 'Votre marge : ' + pc(A.lr);
 
   document.getElementById('waccbox').innerHTML =
-    '<div class="calc"><span><i class="lock"></i>Risk-free rate</span><b>' + pc(f.rf, 2) + '</b></div>' +
-    '<div class="calc"><span>Cost of equity</span><b>' + pc(r.ke, 2) + '</b></div>' +
-    '<div class="calc"><span><i class="lock"></i>Debt share of capital, from market values</span><b>' + pc(r.wd, 1) + '</b></div>' +
-    '<div class="calc k"><span>Discount rate (WACC)</span><b>' + pc(r.wacc, 2) + '</b></div>';
+    '<div class="calc"><span><i class="lock"></i>Taux sans risque (BDT Maroc 10 ans)</span><b>' + pc(f.rf, 2) + '</b></div>' +
+    '<div class="calc"><span>Coût des fonds propres (Ke)</span><b>' + pc(r.ke, 2) + '</b></div>' +
+    '<div class="calc"><span><i class="lock"></i>Poids de la dette (marché)</span><b>' + pc(r.wd, 1) + '</b></div>' +
+    '<div class="calc k"><span>Coût moyen pondéré du capital (CMPC)</span><b>' + pc(r.wacc, 2) + '</b></div>';
 
-  document.getElementById('cur-note').textContent = C.unit + ', valued at ' + niceDate(f.date);
+  document.getElementById('cur-note').textContent = 'En millions de ' + (C.cur || 'MAD') + ', valorisation arrêtée au ' + niceDate(f.date);
   document.getElementById('bridge').innerHTML = [
-    ['2026–2035 cash flows', mil(r.pv)], ['Plus terminal value', mil(r.pvTv)], ['Enterprise value', mil(r.ev), 1],
-    [f.netCash < 0 ? 'Less net debt' : 'Plus net cash', mil(f.netCash)], ['Equity value', mil(r.eq), 1],
-    ['Shares (million)', num(f.shares, 1)], ['Value per share', ok ? money(C, r.value, 2) : '—', 1],
-    ['Terminal value share of enterprise value', pc(r.tvShare, 0)]
+    ['Flux de trésorerie actualisés (2026–2035)', mil(r.pv)],
+    ['Plus valeur terminale actualisée', mil(r.pvTv)],
+    ['Valeur d\'entreprise (VE)', mil(r.ev), 1],
+    [f.netCash < 0 ? 'Moins dette nette' : 'Plus trésorerie nette', mil(f.netCash)],
+    ['Valeur des capitaux propres', mil(r.eq), 1],
+    ['Nombre d\'actions (millions)', num(f.shares, 1)],
+    ['Valeur intrinsèque par action', ok ? money(C, r.value, 2) : '—', 1],
+    ['Part de la valeur terminale dans la VE', pc(r.tvShare, 0)]
   ].map(function (x) { return '<div' + (x[2] ? ' class="tot"' : '') + '><span>' + x[0] + '</span><b>' + x[1] + '</b></div>'; }).join('');
-  document.getElementById('facts-note').textContent = C.source === 'Added by hand' ? 'As you entered them. To change them, add the company again with the same ticker.' : 'From the spreadsheet. Re-import it after a new report.';
+  document.getElementById('facts-note').textContent = C.source === 'Added by hand' || C.source === 'Ajoutée manuellement' ? 'Données saisies. Pour les modifier, réajoutez la société avec le même ticker.' : 'Extraites du modèle financier et des publications de la BVC. Réimportez pour actualiser.';
   document.getElementById('facts').innerHTML = C.facts.map(function (x) { return '<div><span>' + esc(x[0]) + '</span><b>' + esc(x[1]) + '</b></div>'; }).join('');
 
-  document.getElementById('unit-note').textContent = C.unit + '. The first column is the last reported year. 2026 counts only the part of the year after the valuation date.';
-  var R = r.rows, th = '<thead><tr><th></th><th class="act">2025A</th>' + R.map(function (x) { return '<th>' + x.year + 'E</th>'; }).join('') + '</tr></thead>';
+  document.getElementById('unit-note').textContent = 'En millions de ' + (C.cur || 'MAD') + '. La première colonne présente l\'exercice 2025 réel. L\'exercice 2026 est calculé au prorata temporis.';
+  var R = r.rows, th = '<thead><tr><th>Indicateur</th><th class="act">2025R</th>' + R.map(function (x) { return '<th>' + x.year + 'E</th>'; }).join('') + '</tr></thead>';
   var line = function (lb, a0, fn, em) { return '<tr' + (em ? ' class="em"' : '') + '><td>' + lb + '</td><td class="act">' + a0 + '</td>' + R.map(function (x) { return '<td>' + fn(x) + '</td>'; }).join('') + '</tr>'; };
   document.getElementById('proj').innerHTML = th + '<tbody>' +
-    line('Revenue growth', '', function (x) { return pc(x.g); }) +
-    line('Revenue', mil(f.rev0), function (x) { return mil(x.rev); }) +
-    line('Operating margin', pc(f.m0), function (x) { return pc(x.m); }) +
-    line('Operating profit', mil(f.rev0 * f.m0), function (x) { return mil(x.ebit); }) +
-    line('After tax', '', function (x) { return mil(x.nopat); }) +
-    line(f.reinvest === 'pct' ? 'Less net investment' : 'Less reinvestment', '', function (x) { return mil(-x.inv); }) +
-    line('Free cash flow', '', function (x) { return mil(x.fcf); }, 1) +
-    line('Value today', '', function (x) { return mil(x.pv); }) + '</tbody>';
+    line('Croissance du chiffre d\'affaires / PNB', '', function (x) { return pc(x.g); }) +
+    line('Chiffre d\'affaires / PNB', mil(f.rev0), function (x) { return mil(x.rev); }) +
+    line('Marge opérationnelle (REX)', pc(f.m0), function (x) { return pc(x.m); }) +
+    line('Résultat d\'exploitation (REX / EBIT)', mil(f.rev0 * f.m0), function (x) { return mil(x.ebit); }) +
+    line('Résultat d\'exploitation après impôt (NOPAT)', '', function (x) { return mil(x.nopat); }) +
+    line(f.reinvest === 'pct' ? 'Moins investissements nets' : 'Moins réinvestissement en capital', '', function (x) { return mil(-x.inv); }) +
+    line('Flux de trésorerie disponible (FCFF)', '', function (x) { return mil(x.fcf); }, 1) +
+    line('Valeur actuelle du flux', '', function (x) { return mil(x.pv); }) + '</tbody>';
 
   var ws = [-0.015, -0.0075, 0, 0.0075, 0.015], ms = [-0.05, -0.025, 0, 0.025, 0.05], best = null, cells = [];
-  var h = '<thead><tr><th>WACC ↓ / margin →</th>' + ms.map(function (dm) { return '<th>' + pc(A.lr + dm) + '</th>'; }).join('') + '</tr></thead><tbody>';
+  var h = '<thead><tr><th>CMPC ↓ / Marge →</th>' + ms.map(function (dm) { return '<th>' + pc(A.lr + dm) + '</th>'; }).join('') + '</tr></thead><tbody>';
   ws.forEach(function (dw, i) {
     h += '<tr><td>' + pc(r.wacc + dw, 2) + '</td>';
     ms.forEach(function (dm, j) {
@@ -557,11 +586,11 @@ document.getElementById('bear').addEventListener('click', function () { A = with
 document.getElementById('remove').addEventListener('click', function () {
   var n = C.name, id = C.id, back = LIST.some(function (c) { return c.id === id; });
   CUSTOM = CUSTOM.filter(function (c) { return c.id !== id; }); store('custom', CUSTOM); store('edit:' + id, null);
-  say(back ? 'Removed your version of ' + n + '. Back to the bundled model.' : 'Removed ' + n + ' from this browser.'); choose(back ? id : all()[0].id);
+  say(back ? 'Version personnalisée de ' + n + ' supprimée. Retour au modèle intégré.' : 'Société ' + n + ' supprimée de ce navigateur.'); choose(back ? id : all()[0].id);
 });
 document.getElementById('file').addEventListener('change', function (e) {
   var file = e.target.files[0]; e.target.value = ''; if (!file) return;
-  if (!window.XLSX) { say('The spreadsheet reader did not load. Check your internet connection and try again.', 1); return; }
+  if (!window.XLSX) { say('Le module de lecture Excel n\'a pas pu être chargé. Vérifiez votre connexion Internet et réessayez.', 1); return; }
   file.arrayBuffer().then(function (buf) {
     var wb = XLSX.read(buf, { cellDates: true }), sh = wb.Sheets.DCF || wb.Sheets[wb.SheetNames[0]], cells = {};
     Object.keys(sh).forEach(function (k) {
@@ -569,13 +598,13 @@ document.getElementById('file').addEventListener('change', function (e) {
       var v = sh[k].v;
       cells[k] = v instanceof Date ? new Date(v.getTime() - v.getTimezoneOffset() * 6e4).toISOString().slice(0, 10) : v;
     });
-    var co = fromCells(cells, 'Imported from ' + file.name), b = dcf(co.fact, co.base);
+    var co = fromCells(cells, 'Importé depuis ' + file.name), b = dcf(co.fact, co.base);
     addCustom(co);
     var off = co.sheetValue != null && Math.abs(b.value - co.sheetValue) >= 0.005;
-    say(co.sheetValue == null ? 'Imported ' + co.name + '. The sheet had no saved value to check against.'
-      : !off ? 'Imported ' + co.name + '. The value matches the spreadsheet: ' + money(co, co.sheetValue, 2) + '.'
-      : 'Imported ' + co.name + ', but the value (' + money(co, b.value, 2) + ') differs from the spreadsheet (' + money(co, co.sheetValue, 2) + '). The sheet may use a formula this calculator does not copy.', off);
-  }).catch(function (err) { say(err.message || 'Could not read that file. Save it as .xlsx and try again.', 1); });
+    say(co.sheetValue == null ? 'Modèle ' + co.name + ' importé avec succès. Aucune valeur cible enregistrée dans le classeur.'
+      : !off ? 'Modèle ' + co.name + ' importé. La valeur concorde avec le classeur : ' + money(co, co.sheetValue, 2) + '.'
+      : 'Modèle ' + co.name + ' importé, mais la valeur calculée (' + money(co, b.value, 2) + ') diffère du classeur (' + money(co, co.sheetValue, 2) + '). Le classeur utilise peut-être une formule personnalisée non prise en charge.', off);
+  }).catch(function (err) { say(err.message || 'Impossible de lire ce fichier. Enregistrez-le au format .xlsx et réessayez.', 1); });
 });
 var dlg = document.getElementById('dlg'), nf = document.getElementById('newco');
 document.getElementById('add').addEventListener('click', function () { nf.reset(); dlg.showModal(); });
@@ -587,7 +616,7 @@ nf.ticker.addEventListener('input', function () {
 nf.addEventListener('submit', function () {
   var v = {}; new FormData(nf).forEach(function (x, k) { v[k] = x; });
   var co = fromForm(v); addCustom(co);
-  say('Added ' + co.name + '. The assumptions start as placeholders, so set them before trusting the value.');
+  say('Société ' + co.name + ' ajoutée. Les hypothèses de prévision sont des valeurs indicatives : ajustez-les avant de vous fier à la valorisation.');
 });
 document.getElementById('theme').addEventListener('click', function () {
   var r = document.documentElement, dark = r.dataset.theme ? r.dataset.theme === 'dark' : !matchMedia('(prefers-color-scheme: light)').matches;
