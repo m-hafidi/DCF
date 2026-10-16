@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DCF Calculator</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --panel: #ffffff;
+    --panel-2: #fafbfc;
+    --line: #e3e6ea;
+    --line-strong: #cfd4da;
+    --ink: #171a1f;
+    --ink-2: #4b535d;
+    --muted: #7d8792;
+    --accent: #2f6df6;
+    --accent-soft: #e8f0ff;
+    --pos: #137a4a;
+    --pos-soft: #e6f5ec;
+    --neg: #b3261e;
+    --neg-soft: #fdecea;
+    --warn: #9a5b00;
+    --warn-soft: #fff4e0;
+    --edit: #b97400;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 8px 24px -16px rgba(16, 24, 40, .25);
+  }
+  html[data-theme="dark"] {
+    --bg: #0e1116;
+    --panel: #161a21;
+    --panel-2: #1b2029;
+    --line: #262c36;
+    --line-strong: #38414e;
+    --ink: #eef1f5;
+    --ink-2: #b6bec9;
+    --muted: #7f8b99;
+    --accent: #6d9bff;
+    --accent-soft: #1b2740;
+    --pos: #4ed18b;
+    --pos-soft: #12291f;
+    --neg: #ff7a70;
+    --neg-soft: #2c1614;
+    --warn: #e0a95a;
+    --warn-soft: #2a2113;
+    --edit: #e0a95a;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 32px -20px rgba(0, 0, 0, .8);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .num, input[type="number"], td.n, th.n, .v { font-variant-numeric: tabular-nums; }
+  header.top {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; gap: 16px;
+    padding: 12px 20px;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 650; letter-spacing: -.01em; }
+  .brand .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent); }
+  .brand small { color: var(--muted); font-weight: 450; letter-spacing: 0; }
+  .search { position: relative; margin-left: 8px; flex: 0 1 320px; }
+  .search input {
+    width: 100%; padding: 9px 12px 9px 32px; border: 1px solid var(--line-strong);
+    border-radius: 10px; background: var(--panel); color: var(--ink); font: inherit;
+  }
+  .search svg { position: absolute; left: 10px; top: 10px; opacity: .5; }
+  .spacer { flex: 1; }
+  button {
+    font: inherit; color: var(--ink); background: var(--panel);
+    border: 1px solid var(--line-strong); border-radius: 10px;
+    padding: 8px 12px; cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.primary:hover { filter: brightness(1.06); color: #fff; }
+  button.ghost { background: transparent; border-color: transparent; color: var(--ink-2); }
+  button.ghost:hover { background: var(--panel-2); color: var(--accent); }
+  button.tiny { padding: 5px 9px; font-size: 13px; border-radius: 8px; }
+  .wrap { display: grid; grid-template-columns: 268px minmax(0, 1fr); gap: 20px; padding: 20px; max-width: 1440px; margin: 0 auto; }
+  @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; } }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .card + .card { margin-top: 18px; }
+  .card > h2 { margin: 0; padding: 14px 16px; border-bottom: 1px solid var(--line); font-size: 14px; letter-spacing: .02em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .card > .body { padding: 16px; }
+  .stack > .card:first-child { margin-top: 0; }
+  aside .group-title { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 14px 4px 8px; font-weight: 600; }
+  ul.list { list-style: none; margin: 0; padding: 0; }
+  ul.list li { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 10px; cursor: pointer; }
+  ul.list li:hover { background: var(--panel-2); }
+  ul.list li.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  ul.list li .tk { font-weight: 650; letter-spacing: .01em; }
+  ul.list li .nm { color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  ul.list li.active .nm { color: inherit; opacity: .8; }
+  ul.list li .x { margin-left: auto; opacity: 0; }
+  ul.list li:hover .x { opacity: 1; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1px solid var(--line-strong); border-radius: 999px; padding: 6px 12px; cursor: pointer; background: var(--panel); font-size: 14px; }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+  .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .headline { display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: flex-end; }
+  .headline .name { font-size: 21px; font-weight: 680; letter-spacing: -.015em; margin: 0 0 2px; }
+  .headline .sub { color: var(--muted); font-size: 13px; }
+  .metric { display: flex; flex-direction: column; gap: 2px; }
+  .metric .k { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
+  .metric .v { font-size: 22px; font-weight: 680; letter-spacing: -.02em; }
+  .metric .d { font-size: 12px; color: var(--muted); }
+  .pos { color: var(--pos); }
+  .neg { color: var(--neg); }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .pill.ok { background: var(--pos-soft); color: var(--pos); }
+  .pill.bad { background: var(--neg-soft); color: var(--neg); }
+  .pill.info { background: var(--accent-soft); color: var(--accent); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .banner { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; font-size: 14px; }
+  .banner.warn { background: var(--warn-soft); color: var(--warn); }
+  .banner.bad { background: var(--neg-soft); color: var(--neg); }
+  .banner + .banner { margin-top: 10px; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--panel-2); border-radius: var(--radius) var(--radius) 0 0; }
+  .toolbar .hint { color: var(--muted); font-size: 13px; }
+  fieldset { border: 0; margin: 0; padding: 0; }
+  fieldset + fieldset { margin-top: 22px; padding-top: 18px; border-top: 1px dashed var(--line); }
+  legend { font-size: 13px; font-weight: 650; letter-spacing: .02em; padding-bottom: 2px; }
+  legend .note { font-weight: 400; color: var(--muted); font-size: 12.5px; display: block; margin-top: 2px; }
+  .fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 12px; margin-top: 12px; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 12.5px; color: var(--ink-2); }
+  .field .ctl { display: flex; align-items: center; gap: 6px; }
+  .field input, select, textarea {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--line-strong); border-radius: 9px;
+    background: var(--panel); color: var(--ink); font: inherit;
+  }
+  .field input:focus, select:focus, textarea:focus, .search input:focus { outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 0; border-color: var(--accent); }
+  .field .base { font-size: 11.5px; color: var(--muted); min-height: 15px; }
+  .field.edited input { border-color: var(--edit); background: color-mix(in srgb, var(--edit) 7%, var(--panel)); }
+  .field.edited label { color: var(--edit); }
+  .field .unit { color: var(--muted); font-size: 12.5px; }
+  .years { display: grid; grid-template-columns: repeat(10, minmax(64px, 1fr)); gap: 8px; margin-top: 12px; overflow-x: auto; }
+  .years .field input { padding: 7px 6px; text-align: right; }
+  .years .field label { text-align: center; display: block; font-size: 12px; }
+  .tablewrap { overflow-x: auto; }
+  table.data { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.data th, table.data td { padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  table.data th { text-align: right; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); font-weight: 600; background: var(--panel-2); }
+  table.data th:first-child, table.data td:first-child { text-align: left; }
+  table.data td.n, table.data th.n { text-align: right; }
+  table.data tr.total td { font-weight: 650; background: var(--panel-2); }
+  table.data tr:hover td { background: color-mix(in srgb, var(--accent) 5%, transparent); }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  .matrix { display: grid; gap: 4px; margin-top: 12px; }
+  .matrix .cell { padding: 7px 8px; text-align: right; border-radius: 8px; font-size: 13px; background: var(--panel-2); }
+  .matrix .cell.head { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; background: transparent; text-align: center; }
+  .matrix .cell.axis { color: var(--muted); text-align: left; background: transparent; }
+  .matrix .cell.na { color: var(--muted); }
+  .matrix .cell.base { outline: 2px solid var(--accent); font-weight: 650; }
+  dl.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; font-size: 14px; }
+  dl.kv dt { color: var(--muted); }
+  dl.kv dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+  dialog {
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 0; background: var(--panel); color: var(--ink);
+    max-width: min(720px, 94vw); width: 100%; box-shadow: 0 24px 64px -24px rgba(0, 0, 0, .5);
+  }
+  dialog::backdrop { background: rgba(10, 14, 20, .45); backdrop-filter: blur(2px); }
+  dialog .dlg-head { padding: 16px 18px; border-bottom: 1px solid var(--line); font-weight: 650; }
+  dialog .dlg-body { padding: 18px; max-height: 68vh; overflow: auto; }
+  dialog .dlg-foot { padding: 14px 18px; border-top: 1px solid var(--line); display: flex; gap: 10px; justify-content: flex-end; background: var(--panel-2); border-radius: 0 0 var(--radius) var(--radius); }
+  dialog textarea { min-height: 190px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+  .errors { margin: 0; padding-left: 18px; color: var(--neg); font-size: 13.5px; }
+  footer.foot { color: var(--muted); font-size: 12.5px; padding: 8px 20px 28px; max-width: 1440px; margin: 0 auto; }
+  footer.foot code { font-size: 12px; }
+  .kbd { border: 1px solid var(--line-strong); border-bottom-width: 2px; border-radius: 6px; padding: 1px 5px; font-size: 12px; color: var(--ink-2); }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="dot"></span>DCF Calculator <small id="brandSub">mid-year discounting &middot; part-year stub &middot; terminal value on reinvestment</small></div>
+  <div class="search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+    <input id="search" type="search" placeholder="Search companies" autocomplete="off">
+  </div>
+  <div class="spacer"></div>
+  <button class="ghost" id="themeBtn" title="Toggle light / dark">Dark</button>
+</header>
+
+<div class="wrap">
+  <aside class="stack">
+    <div class="card">
+      <h2>Bundled models</h2>
+      <div class="body">
+        <div class="chips" id="chips"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Your companies</h2>
+      <div class="body">
+        <ul class="list" id="customList"></ul>
+        <div style="display:flex; gap:8px; margin-top:12px;">
+          <button class="tiny" id="addBtn">Add by hand</button>
+          <button class="tiny" id="importBtn">Import CSV</button>
+        </div>
+        <div id="customEmpty" class="hint" style="color:var(--muted); font-size:13px; margin-top:10px;">Nothing yet. Companies you add, imports and your edits are kept in this browser only.</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="stack" id="main"></main>
+</div>
+
+<footer class="foot">
+  Model: WACC from CAPM with debt weighting, ten yearly free cash flows with mid-year discounting and a part-year stub, terminal value from <code>FCF<sub>T</sub> = NOPAT<sub>T</sub> &middot; (1 &minus; g / ROIC)</code>. Press <span class="kbd">D</span> to toggle the theme. Figures in USD millions unless stated.
+</footer>
+
+<dialog id="addDlg">
+  <form method="dialog">
+    <div class="dlg-head">Add a company by hand</div>
+    <div class="dlg-body">
+      <div class="fields">
+        <div class="field"><label for="nName">Name</label><input id="nName" placeholder="Acme Corp (ACME)"></div>
+        <div class="field"><label for="nTicker">Ticker</label><input id="nTicker" placeholder="ACME"></div>
+        <div class="field"><label for="nPrice">Share price</label><input id="nPrice" type="number" step="any" value="100"></div>
+        <div class="field"><label for="nShares">Shares outstanding (millions)</label><input id="nShares" type="number" step="any" value="1000"></div>
+        <div class="field"><label for="nRev">Last full-year revenue</label><input id="nRev" type="number" step="any" value="10000"></div>
+        <div class="field"><label for="nMargin">Last full-year operating margin (%)</label><input id="nMargin" type="number" step="any" value="20"></div>
+        <div class="field"><label for="nNet">Net cash / (net debt)</label><input id="nNet" type="number" step="any" value="0"></div>
+        <div class="field"><label for="nDebt">Total debt</label><input id="nDebt" type="number" step="any" value="0"></div>
+      </div>
+      <p style="color:var(--muted); font-size:13px; margin-bottom:0;">Saved in this browser. Every fact and assumption stays editable, and you can reset to this baseline at any time.</p>
+    </div>
+    <div class="dlg-foot">
+      <button value="cancel">Cancel</button>
+      <button class="primary" id="addGo" value="ok">Add company</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="csvDlg">
+  <form method="dialog">
+    <div class="dlg-head">Import a DCF spreadsheet (CSV)</div>
+    <div class="dlg-body">
+      <p style="margin-top:0; color:var(--ink-2); font-size:13.5px;">
+        Upload or paste a two-column dump of the template cells: cell reference and value, one row per cell.
+        <span class="mono" style="font-family:ui-monospace,Consolas,monospace">C6,2026-10-14</span>. A third label column is ignored.
+      </p>
+      <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap;">
+        <input id="csvFile" type="file" accept=".csv,text/csv" style="width:auto;">
+        <span style="color:var(--muted); font-size:13px;">or paste below</span>
+      </div>
+      <textarea id="csvText" spellcheck="false" placeholder="B2,Micron Technology, Inc. (MU) - Independent 10-year DCF&#10;C6,2026-10-14&#10;C7,914.13&#10;C8,1131.4&#10;...&#10;E31,3.28&#10;...&#10;N33,0.35"></textarea>
+      <div id="csvErrors" style="margin-top:12px;"></div>
+    </div>
+    <div class="dlg-foot">
+      <button value="cancel">Cancel</button>
+      <button class="primary" id="csvGo" value="ok">Import</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+"use strict";
+
+var COLS = "EFGHIJKLMN".split("");
+var YEAR_FIELDS = { g: "E31", m: "E33" };
+var CELL = {
+  name: "B2", date: "C6", price: "C7", shares: "C8", rev0: "C9", netCash: "C10", debt: "C11",
+  rf: "C12", beta: "C13", erp: "C14", crp: "C15", kd: "C17", tShield: "C18", mode: "B22", tax: "C21",
+  inv: "C22", tg: "C23", roic: "C24", lr: "C25", taxT: "C26", m0: "D33"
+};
+var REQUIRED_NUM = ["C7", "C8", "C9", "C10", "C11", "C12", "C13", "C14", "C15", "C17", "C18", "C21", "C22", "C23", "C24", "C25", "C26", "D33"]
+  .concat(COLS.map(function (x) { return x + "31"; })).concat(COLS.map(function (x) { return x + "33"; }));
+
+function dcf(f, a, over) {
+  over = over || {};
+  var ke = f.rf + a.beta * a.erp + a.crp;
+  var wd = f.debt / (f.debt + f.price * f.shares);
+  var wacc = over.wacc != null ? over.wacc : ke * (1 - wd) + a.kd * (1 - f.tShield) * wd;
+  var y0 = +String(f.date).slice(0, 4);
+  var d = String(f.date).split("-");
+  var stub = (Date.UTC(y0, 11, 31) - Date.UTC(+d[0], d[1] - 1, +d[2])) / 864e5 / 365;
+  var rev = f.rev0, prev = f.rev0, rows = [], pv = 0;
+  for (var i = 0; i < 10; i++) {
+    rev = prev * (1 + a.g[i]);
+    var ebit = rev * a.m[i], nopat = ebit * (1 - a.tax);
+    var inv = f.reinvest === "pct" ? rev * a.inv : Math.max(0, rev - prev) / a.inv;
+    var fcf = nopat - inv, share = i ? 1 : stub, t = i ? stub + i - 0.5 : stub / 2;
+    var p = fcf * share / Math.pow(1 + wacc, t);
+    rows.push({ year: y0 + i, g: a.g[i], rev: rev, m: a.m[i], ebit: ebit, nopat: nopat, inv: inv, fcf: fcf, pv: p });
+    pv += p; prev = rev;
+  }
+  var revT = rev * (1 + a.tg), nopatT = revT * a.lr * (1 - a.taxT);
+  var fcfT = nopatT - nopatT * a.tg / a.roic;
+  var tv = fcfT / (wacc - a.tg), pvTv = tv / Math.pow(1 + wacc, stub + 9);
+  var ev = pv + pvTv, eq = ev + f.netCash;
+  return {
+    ke: ke, wd: wd, wacc: wacc, stub: stub, rows: rows, pv: pv, pvTv: pvTv, ev: ev, tvShare: pvTv / ev, eq: eq,
+    value: eq / f.shares, fcfT: fcfT,
+    valid: wacc > a.tg && a.roic > 0 && (f.reinvest === "pct" || a.inv > 0) && a.inv > 0 && isFinite(ev)
+  };
+}
+
+function withLr(a, lr) {
+  var dd = lr - a.lr, b = clone(a), i;
+  b.lr = lr;
+  for (i = 4; i < 10; i++) b.m[i] += dd;
+  return b;
+}
+
+function impliedMargin(f, a) {
+  var lo = -0.5, hi = 1.5, k, mid;
+  for (k = 0; k < 80; k++) { mid = (lo + hi) / 2; if (dcf(f, withLr(a, mid)).value < f.price) lo = mid; else hi = mid; }
+  return (lo + hi) / 2;
+}
+
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+var SEED = [
+  {
+    id: "MU", ticker: "MU", name: "Micron Technology, Inc.", date: "2026-10-14", bear: 0.25,
+    facts: { date: "2026-10-14", price: 914.13, shares: 1131.4, rev0: 42312, m0: 0.3245415012289658, netCash: 68274, debt: 5179, rf: 0.0519, tShield: 0.21, reinvest: "pct" },
+    base: {
+      beta: 1.6, erp: 0.045, crp: 0, kd: 0.062, tax: 0.16, taxT: 0.16, inv: 0.1,
+      tg: 0.025, roic: 0.15, lr: 0.35,
+      g: [3.28, 0.617, 0.05, -0.25, -0.1, 0.05, 0.05, 0.04, 0.03, 0.025],
+      m: [0.78, 0.75, 0.6, 0.42, 0.35, 0.35, 0.35, 0.35, 0.35, 0.35]
+    },
+    notes: { rev0: "Calendar 2025 revenue, four quarters to Nov 2025", m0: "Calendar 2025 operating margin" }
+  },
+  {
+    id: "AAPL", ticker: "AAPL", name: "Apple Inc.", date: "2026-10-14", bear: 0.28,
+    facts: { date: "2026-10-14", price: 342.96, shares: 14594.2, rev0: 435617, m0: 0.3238395195779779, netCash: 62173, debt: 84344, rf: 0.0519, tShield: 0.21, reinvest: "pct" },
+    base: {
+      beta: 1.1, erp: 0.045, crp: 0, kd: 0.057, tax: 0.16, taxT: 0.16, inv: 0.01,
+      tg: 0.025, roic: 0.3, lr: 0.32,
+      g: [0.12, 0.108, 0.07, 0.06, 0.05, 0.05, 0.04, 0.04, 0.03, 0.03],
+      m: [0.33, 0.33, 0.33, 0.33, 0.32, 0.32, 0.32, 0.32, 0.32, 0.32]
+    },
+    notes: { rev0: "FY2025 revenue", m0: "FY2025 operating margin" }
+  },
+  {
+    id: "AMZN", ticker: "AMZN", name: "Amazon.com, Inc.", date: "2026-10-14", bear: 0.13,
+    facts: { date: "2026-10-14", price: 254.08, shares: 10786.3, rev0: 716924, m0: 0.11155296795755199, netCash: -9236, debt: 132224, rf: 0.0519, tShield: 0.21, reinvest: "ratio" },
+    base: {
+      beta: 1.3, erp: 0.045, crp: 0, kd: 0.057, tax: 0.18, taxT: 0.18, inv: 1.2,
+      tg: 0.025, roic: 0.15, lr: 0.17,
+      g: [0.156, 0.145, 0.12, 0.11, 0.1, 0.09, 0.08, 0.07, 0.06, 0.05],
+      m: [0.135, 0.145, 0.155, 0.16, 0.17, 0.17, 0.17, 0.17, 0.17, 0.17]
+    },
+    notes: { rev0: "FY2025 revenue", m0: "FY2025 operating margin", inv: "Revenue per dollar of invested capital" }
+  },
+  {
+    id: "TSLA", ticker: "TSLA", name: "Tesla, Inc.", date: "2026-10-14", bear: 0.06,
+    facts: { date: "2026-10-14", price: 367.16, shares: 3949.5, rev0: 94827, m0: 0.04592573845001951, netCash: 34444, debt: 9080, rf: 0.0519, tShield: 0.21, reinvest: "ratio" },
+    base: {
+      beta: 1.8, erp: 0.045, crp: 0, kd: 0.067, tax: 0.2, taxT: 0.2, inv: 1.5,
+      tg: 0.025, roic: 0.12, lr: 0.1,
+      g: [0.13, 0.136, 0.15, 0.15, 0.12, 0.1, 0.08, 0.06, 0.05, 0.04],
+      m: [0.03, 0.05, 0.07, 0.09, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+    },
+    notes: { rev0: "FY2025 revenue", m0: "FY2025 operating margin", inv: "Revenue per dollar of invested capital" }
+  }
+];
+
+var DEFAULT_FACTS = { date: new Date().toISOString().slice(0, 10), price: 100, shares: 1000, rev0: 10000, m0: 0.2, netCash: 0, debt: 0, rf: 0.045, tShield: 0.21, reinvest: "ratio" };
+var DEFAULT_ASSUMPTIONS = {
+  beta: 1, erp: 0.045, crp: 0, kd: 0.05, tax: 0.21, taxT: 0.21, inv: 1.5,
+  tg: 0.025, roic: 0.15, lr: 0.2,
+  g: [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05],
+  m: [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]
+};
+
+var LS = { theme: "dcf:v1:theme", custom: "dcf:v1:custom", edits: "dcf:v1:edits", selected: "dcf:v1:selected", search: "dcf:v1:search" };
+
+function read(k, fb) { try { var v = localStorage.getItem(k); return v == null ? fb : JSON.parse(v); } catch (e) { return fb; } }
+function write(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+var companies = SEED.map(function (c) { return { id: c.id, ticker: c.ticker, name: c.name, bundled: true, source: c }; });
+var customs = read(LS.custom, []);
+var edits = read(LS.edits, {});
+var state = { id: read(LS.selected, "MU"), query: read(LS.search, "") };
+
+function allCompanies() { return companies.concat(customs.map(function (c) { return { id: c.id, ticker: c.ticker, name: c.name, bundled: false, source: c }; })); }
+function profile(id) {
+  var c = allCompanies().filter(function (x) { return x.id === id; })[0];
+  if (!c) { state.id = "MU"; c = allCompanies()[0]; }
+  var s = c.source;
+  var p = { id: c.id, ticker: c.ticker, name: c.name, bundled: c.bundled, date: s.date, bear: s.bear, notes: s.notes || {}, recompute: s.recompute !== false };
+  p.base = clone(s.base);
+  p.factsBase = clone(s.facts);
+  p.facts = clone(s.facts);
+  p.cur = clone(s.base);
+  var e = edits[id];
+  if (e) {
+    if (e.facts) Object.keys(p.facts).forEach(function (k) { if (typeof e.facts[k] !== "undefined") p.facts[k] = e.facts[k]; });
+    if (e.cur) Object.keys(p.cur).forEach(function (k) { if (typeof e.cur[k] !== "undefined") p.cur[k] = e.cur[k]; });
+  }
+  p.res = dcf(p.facts, p.cur);
+  return p;
+}
+
+function saveEdits(p) {
+  edits[p.id] = { facts: diff(p.facts, p.factsBase), cur: diff(p.cur, p.base) };
+  write(LS.edits, edits);
+}
+
+function same(a, b) {
+  if (Array.isArray(a) || Array.isArray(b)) {
+    if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
+    for (var i = 0; i < a.length; i++) if (!same(a[i], b[i])) return false;
+    return true;
+  }
+  if (typeof a === "number" && typeof b === "number") return Math.abs(a - b) < 1e-12;
+  return a === b;
+}
+function diff(cur, base) {
+  var out = {};
+  Object.keys(cur).forEach(function (k) { if (!same(cur[k], base[k])) out[k] = cur[k]; });
+  return out;
+}
+
+var pct = function (v, d) { return (v * 100).toFixed(d == null ? 1 : d) + "%"; };
+var signed = function (v) { return (v >= 0 ? "+" : "-") + Math.abs(v * 100).toFixed(1) + "%"; };
+function num(v, d) { return Number(v).toLocaleString("en-US", { minimumFractionDigits: d || 0, maximumFractionDigits: d == null ? 0 : d }); }
+function money(v, d) { return (v < 0 ? "-" : "") + "$" + num(Math.abs(v), d == null ? 2 : d); }
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+function dateLabel(s) { var d = String(s).split("-"); return new Date(+d[0], +d[1] - 1, +d[2]).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }); }
+
+function yearKeys(f) { var y0 = +String(f.date).slice(0, 4); return f.years || Array.from({ length: 10 }, function (_, i) { return y0 + i; }); }
+
+function fieldDefs(p) {
+  var fixed = [
+    { k: "price", label: "Share price ($)" }, { k: "shares", label: "Shares outstanding (millions)" },
+    { k: "rev0", label: "Last full-year revenue", note: p.notes.rev0 },
+    { k: "m0", label: "Last full-year operating margin", pct: true, note: p.notes.m0 },
+    { k: "netCash", label: "Net cash / (net debt)" }, { k: "debt", label: "Total debt" },
+    { k: "rf", label: "Risk-free rate", pct: true }, { k: "tShield", label: "Tax saving on interest", pct: true }
+  ];
+  var ass = [
+    {
+      title: "Discount rate", note: "Cost of equity from beta, risk premium and country premium; WACC is weighted by debt at market value.",
+      fields: [{ k: "beta", label: "Beta" }, { k: "erp", label: "Equity risk premium", pct: true }, { k: "crp", label: "Country risk premium", pct: true },
+        { k: "kd", label: "Cost of debt (before tax)", pct: true }, { k: "tax", label: "Tax rate (forecast)", pct: true }, { k: "taxT", label: "Terminal tax rate", pct: true }]
+    },
+    {
+      title: "Revenue growth", note: "Yearly revenue growth for the ten forecast years.", years: "g"
+    },
+    {
+      title: "Operating margin", note: "Operating margin for the ten forecast years.", years: "m"
+    },
+    {
+      title: "Long run and terminal value", note: "The terminal margin also drives the years from the fifth year on, so moving it moves both together.",
+      fields: [{ k: "tg", label: "Terminal growth", pct: true }, { k: "roic", label: "Terminal ROIC", pct: true }, { k: "lr", label: "Terminal operating margin", pct: true },
+        { k: "inv", label: p.facts.reinvest === "pct" ? "Net investment (% of revenue)" : "Sales-to-capital ratio", pct: p.facts.reinvest === "pct", note: p.notes.inv }]
+    }
+  ];
+  return { fixed: fixed, ass: ass };
+}
+
+function input(k, label, val, isPct, baseVal, note, cls) {
+  var shown = isPct ? +(val * 100).toFixed(6) : +Number(val).toFixed(6);
+  var shownBase = baseVal == null ? null : (isPct ? +(baseVal * 100).toFixed(6) : +Number(baseVal).toFixed(6));
+  var edited = baseVal != null && !same(val, baseVal);
+  return '<div class="field ' + (edited ? "edited" : "") + (cls ? " " + cls : "") + '" data-field="' + k + '">' +
+    '<label for="in-' + k + '">' + esc(label) + (isPct ? ' <span class="unit">%</span>' : "") + "</label>" +
+    '<div class="ctl"><input id="in-' + k + '" data-k="' + k + '" data-pct="' + (isPct ? "1" : "0") + '" type="number" step="any" value="' + shown + '"' +
+    (baseVal != null ? ' data-base="' + shownBase + '"' : "") + "></div>" +
+    '<div class="base">' + (note ? esc(note) : (shownBase != null ? "base " + shownBase : "")) + "</div></div>";
+}
+
+function render() {
+  var p = profile(state.id);
+  renderChips();
+  renderCustom();
+  renderMain(p);
+  document.getElementById("brandSub").textContent = p.bundled ? "mid-year discounting \u00b7 part-year stub \u00b7 terminal value on reinvestment" : "your company";
+}
+
+function visibleCompanies() {
+  var q = state.query.trim().toLowerCase();
+  return allCompanies().filter(function (c) { return !q || (c.id + " " + c.ticker + " " + c.name).toLowerCase().indexOf(q) >= 0; });
+}
+
+function renderChips() {
+  var box = document.getElementById("chips");
+  var list = visibleCompanies();
+  box.innerHTML = list.length ? list.map(function (c) {
+    return '<button class="chip ' + (c.id === state.id ? "active" : "") + '" data-id="' + c.id + '">' + esc(c.ticker) + "</button>";
+  }).join("") : '<span style="color:var(--muted); font-size:13px;">No match.</span>';
+  if (!list.length) return;
+}
+
+function renderCustom() {
+  var ul = document.getElementById("customList");
+  var list = visibleCompanies().filter(function (c) { return !c.bundled; });
+  ul.innerHTML = list.map(function (c) {
+    return '<li class="' + (c.id === state.id ? "active" : "") + '" data-id="' + c.id + '"><span class="tk">' + esc(c.ticker) + '</span><span class="nm">' + esc(c.name) + '</span><button class="ghost tiny x" data-del="' + c.id + '" title="Delete">\u00d7</button></li>';
+  }).join("");
+  document.getElementById("customEmpty").style.display = customs.length ? "none" : "block";
+}
+
+function renderMain(p) {
+  var r = p.res;
+  var upside = r.value / p.facts.price - 1;
+  var y0 = +String(p.facts.date).slice(0, 4);
+  var years = Array.from({ length: 10 }, function (_, i) { return y0 + i; });
+  var defs = fieldDefs(p);
+  var implied = r.valid ? impliedMargin(p.facts, p.cur) : NaN;
+  var editedCount = Object.keys(diff(p.cur, p.base)).length + Object.keys(diff(p.facts, p.factsBase)).length;
+
+  var html = "";
+  html += '<section class="card"><div class="body">';
+  html += '<div class="headline">';
+  html += '<div><h1 class="name">' + esc(p.name) + "</h1>" +
+    '<div class="sub">' + esc(p.ticker) + " &middot; valuation date " + dateLabel(p.facts.date) + " &middot; USD millions unless stated" + (p.bundled ? "" : " &middot; your company") + "</div></div>";
+  html += metric("Value per share", money(r.value), r.valid ? pill(upside >= 0 ? "upside " + signed(upside) : "downside " + signed(upside), upside >= 0 ? "ok" : "bad") : pill("model invalid", "bad"));
+  html += metric("Share price", money(p.facts.price), pill("vs model", "info"));
+  html += metric("Equity value", money(r.eq, 0), "&nbsp;");
+  html += metric("Enterprise value", money(r.ev, 0), "terminal value " + (isFinite(r.tvShare) ? pct(r.tvShare, 0) + " of EV" : "\u2014"));
+  html += metric("WACC", pct(r.wacc, 2), "cost of equity " + pct(r.ke, 2));
+  html += metric("Market-implied terminal margin", isFinite(implied) ? pct(implied, 1) : "\u2014", "margin that makes the model equal the price");
+  html += "</div>";
+  if (!r.valid) html += '<div class="banner bad" style="margin-top:16px;">The model is not solvable as entered: the discount rate must exceed terminal growth, terminal ROIC and the investment rate must be positive.</div>';
+  html += "</div></section>";
+
+  html += '<section class="card"><div class="toolbar">';
+  html += '<button class="tiny" data-act="reset">Reset to base case</button>';
+  html += '<button class="tiny" data-act="bear">Bear case: long-run margin ' + (p.bear * 100).toFixed(0) + "%</button>";
+  html += '<button class="tiny" data-act="export">Export CSV</button>';
+  html += '<span class="hint">' + (editedCount ? editedCount + " edited field" + (editedCount === 1 ? "" : "s") + " (outlined, base value shown)" : "Percentages are typed as numbers: 25 means 25%.") + "</span>";
+  html += "</div><div class='body'>";
+
+  html += "<fieldset><legend>Facts from the filings</legend><div class='fields'>";
+  defs.fixed.forEach(function (f) { html += input(f.k, f.label, p.facts[f.k], !!f.pct, p.factsBase[f.k], f.note); });
+  html += '<div class="field"><label>Reinvestment basis</label><div class="ctl"><select data-k="reinvest">' +
+    '<option value="ratio"' + (p.facts.reinvest === "ratio" ? " selected" : "") + ">Increased sales / invested capital</option>" +
+    '<option value="pct"' + (p.facts.reinvest === "pct" ? " selected" : "") + ">Percentage of revenue</option></select></div>" +
+    '<div class="base">base ' + esc((p.factsBase.reinvest === "pct" ? "percentage of revenue" : "sales-to-capital")) + "</div></div>";
+  html += "</div></fieldset>";
+
+  defs.ass.forEach(function (g) {
+    html += "<fieldset><legend>" + esc(g.title) + (g.note ? '<span class="note">' + esc(g.note) + "</span>" : "") + "</legend>";
+    if (g.years) {
+      html += '<div class="years">';
+      years.forEach(function (y, i) {
+        var k = g.years + "_" + i;
+        html += input(k, String(y), p.cur[g.years][i], true, p.base[g.years][i], null);
+      });
+      html += "</div>";
+    } else {
+      html += '<div class="fields">';
+      g.fields.forEach(function (f) { html += input(f.k, f.label, p.cur[f.k], !!f.pct, p.base[f.k], f.note); });
+      html += "</div>";
+    }
+    html += "</fieldset>";
+  });
+  html += "</div></section>";
+
+  var rows = "";
+  r.rows.forEach(function (x) {
+    rows += "<tr><td>" + x.year + '</td><td class="n">' + pct(x.g, 1) + '</td><td class="n">' + num(x.rev, 0) + '</td><td class="n">' + pct(x.m, 1) +
+      '</td><td class="n">' + num(x.ebit, 0) + '</td><td class="n">' + num(x.nopat, 0) + '</td><td class="n">' + num(x.inv, 0) +
+      '</td><td class="n">' + num(x.fcf, 0) + '</td><td class="n">' + num(x.pv, 0) + "</td></tr>";
+  });
+  html += '<section class="card"><h2>Projection</h2><div class="tablewrap"><table class="data"><thead><tr>' +
+    "<th>Year</th><th class='n'>Growth</th><th class='n'>Revenue</th><th class='n'>Margin</th><th class='n'>EBIT</th><th class='n'>NOPAT</th><th class='n'>Net investment</th><th class='n'>Free cash flow</th><th class='n'>PV</th>" +
+    "</tr></thead><tbody>" + rows + "</tbody><tfoot>" +
+    '<tr class="total"><td>Totals</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="n">PV of forecast ' + num(r.pv, 0) + '</td><td class="n">' + num(r.pv, 0) + "</td></tr>" +
+    '<tr class="total"><td>Terminal value</td><td>' + pct(p.cur.tg, 1) + " growth</td><td></td><td>" + pct(p.cur.lr, 1) + " margin at " + pct(p.cur.roic, 0) + " ROIC</td><td></td><td></td><td></td><td class='n'>" + num(r.fcfT, 0) + " terminal FCF</td><td class='n'>" + num(r.pvTv, 0) + "</td></tr>" +
+    '<tr class="total"><td>Enterprise value</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="n">' + num(r.pv + r.pvTv, 0) + '</td><td class="n">' + num(r.pv + r.pvTv, 0) + "</td></tr>" +
+    '<tr class="total"><td>Equity value</td><td colspan="4">enterprise value ' + num(r.ev, 0) + (p.facts.netCash >= 0 ? " + net cash " : " &minus; net debt ") + num(Math.abs(p.facts.netCash), 0) + "</td><td></td><td></td><td></td><td class='n'>" + num(r.eq, 0) + "</td></tr>" +
+    '<tr class="total"><td>Value per share</td><td colspan="8">equity value &divide; ' + num(p.facts.shares, 1) + " million shares = <strong>" + money(r.value) + "</strong> against a price of " + money(p.facts.price) + " (" + signed(upside) + ")</td></tr>" +
+    "</tfoot></table></div></section>";
+
+  html += '<section class="card"><h2>Sensitivities</h2><div class="body"><div class="grid2">';
+  html += '<div><div class="metric"><span class="k">Value per share by WACC</span><span class="d">alongside terminal growth</span></div>' + matrix(p, r) + "</div>";
+  html += '<div><div class="metric"><span class="k">Value per share by terminal margin</span><span class="d">bear and bull long-run margins</span></div>' + marginMatrix(p, r) + "</div>";
+  html += "</div></div></section>";
+
+  document.getElementById("main").innerHTML = html;
+}
+
+function metric(k, v, d) {
+  return '<div class="metric"><span class="k">' + k + '</span><span class="v">' + v + '</span><span class="d">' + d + "</span></div>";
+}
+function pill(t, kind) { return '<span class="pill ' + kind + '">' + t + "</span>"; }
+
+var heat = function (v, base) {
+  if (!isFinite(v) || !isFinite(base) || base === 0) return "";
+  var d = Math.max(-1, Math.min(1, (v - base) / Math.abs(base) / 0.35));
+  var c = d >= 0 ? "19,122,74" : "179,38,30";
+  return "background: rgba(" + c + "," + (0.05 + Math.abs(d) * 0.24).toFixed(3) + ")";
+};
+
+function matrix(p, r) {
+  var wsteps = [-0.02, -0.01, 0, 0.01, 0.02], gsteps = [-0.01, -0.005, 0, 0.005, 0.01];
+  var out = '<div class="matrix" style="grid-template-columns: 74px repeat(' + gsteps.length + ', minmax(58px, 1fr));">';
+  out += '<div class="cell head"></div>';
+  gsteps.forEach(function (g) { out += '<div class="cell head">' + pct(p.cur.tg + g, 1) + "</div>"; });
+  wsteps.forEach(function (w) {
+    out += '<div class="cell axis">' + pct(r.wacc + w, 1) + "</div>";
+    gsteps.forEach(function (g) {
+      var a = clone(p.cur); a.tg = p.cur.tg + g;
+      var res = dcf(p.facts, a, { wacc: r.wacc + w });
+      var cls = (w === 0 && g === 0) ? " base" : "";
+      out += '<div class="cell' + cls + (res.valid ? "" : " na") + '" style="' + (res.valid ? heat(res.value, r.value) : "") + '">' + (res.valid ? num(res.value, 2) : "\u2014") + "</div>";
+    });
+  });
+  out += "</div>";
+  return out;
+}
+
+function marginMatrix(p, r) {
+  var steps = p.bear < p.cur.lr
+    ? [p.bear, p.bear + (p.cur.lr - p.bear) / 3, p.bear + 2 * (p.cur.lr - p.bear) / 3, p.cur.lr, p.cur.lr + (p.cur.lr - p.bear)]
+    : [p.cur.lr * 0.5, p.cur.lr * 0.75, p.cur.lr, p.cur.lr * 1.25, p.cur.lr * 1.5];
+  var out = '<div class="matrix" style="grid-template-columns: 74px repeat(' + steps.length + ', minmax(58px, 1fr));">';
+  out += '<div class="cell head">margin</div>';
+  steps.forEach(function (m) { out += '<div class="cell head">' + pct(m, 1) + "</div>"; });
+  out += '<div class="cell axis">value</div>';
+  steps.forEach(function (m) {
+    var res = dcf(p.facts, withLr(p.cur, m), null);
+    var cls = same(m, p.cur.lr) ? " base" : "";
+    out += '<div class="cell' + cls + (res.valid ? "" : " na") + '" style="' + (res.valid ? heat(res.value, r.value) : "") + '">' + (res.valid ? num(res.value, 2) : "\u2014") + "</div>";
+  });
+  out += "</div>";
+  return out;
+}
+
+function setNum(p, k, isPct, v) {
+  var n = parseFloat(v);
+  if (!isFinite(n)) return false;
+  var val = isPct ? n / 100 : n;
+  if (k.length > 2 && k[1] === "_") {
+    var idx = +k.slice(2);
+    if (k[0] === "g") p.cur.g[idx] = val;
+    else if (k[0] === "m") p.cur.m[idx] = val;
+    return true;
+  }
+  if (k in p.cur) p.cur[k] = val;
+  else p.facts[k] = val;
+  return true;
+}
+
+function onInput(ev) {
+  var t = ev.target;
+  var p = profile(state.id);
+  if (t.dataset.k === "reinvest") {
+    p.facts.reinvest = t.value;
+    saveEdits(p);
+    renderMain(profile(state.id));
+    return;
+  }
+  var k = t.dataset.k;
+  if (!k) return;
+  if (setNum(p, k, t.dataset.pct === "1", t.value)) {
+    saveEdits(p);
+    refresh(profile(state.id));
+  }
+}
+
+function fieldValue(p, k) {
+  if (k.length > 2 && k[1] === "_") {
+    var idx = +k.slice(2);
+    return k[0] === "g" ? p.cur.g[idx] : p.cur.m[idx];
+  }
+  if (k === "reinvest") return p.facts.reinvest;
+  return (k in p.base) ? p.cur[k] : p.facts[k];
+}
+
+function fieldBase(p, k) {
+  if (k.length > 2 && k[1] === "_") {
+    var idx = +k.slice(2);
+    return k[0] === "g" ? p.base.g[idx] : p.base.m[idx];
+  }
+  return (k in p.base) ? p.base[k] : p.factsBase[k];
+}
+
+function refresh(p) {
+  p.res = dcf(p.facts, p.cur);
+  var scrollY = window.scrollY;
+  var active = document.activeElement;
+  var focusK = active && active.dataset ? active.dataset.k : null;
+  var selStart = active ? active.selectionStart : null;
+  renderMain(p);
+  Array.prototype.forEach.call(document.querySelectorAll("#main input[data-k]"), function (el) {
+    var k = el.dataset.k, isPct = el.dataset.pct === "1";
+    var v = fieldValue(p, k), bv = fieldBase(p, k);
+    el.closest(".field").classList.toggle("edited", k !== "reinvest" && !same(v, bv));
+    if (k !== "reinvest") el.value = isPct ? +(v * 100).toFixed(6) : +Number(v).toFixed(6);
+  });
+  window.scrollTo(0, scrollY);
+  if (focusK) {
+    var el = document.querySelector('#main [data-k="' + focusK.replace(/"/g, "") + '"]');
+    if (el) { el.focus(); try { el.setSelectionRange(selStart, selStart); } catch (e) {} }
+  }
+}
+
+function resetCompany(p) {
+  var c = allCompanies().filter(function (x) { return x.id === p.id; })[0];
+  p.facts = clone(c.source.facts);
+  p.base = clone(c.source.base);
+  p.factsBase = clone(c.source.facts);
+  delete edits[p.id];
+  write(LS.edits, edits);
+}
+function bearCompany(p) {
+  p.cur = withLr(p.cur, p.bear);
+  saveEdits(p);
+}
+
+function csvRows(text) {
+  var out = [], row = [], cell = "", q = false, i, ch;
+  text = text.replace(/\r\n?/g, "\n");
+  for (i = 0; i < text.length; i++) {
+    ch = text[i];
+    if (q) {
+      if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+      else cell += ch;
+    } else if (ch === '"') q = true;
+    else if (ch === ",") { row.push(cell); cell = ""; }
+    else if (ch === "\n") { row.push(cell); out.push(row); row = []; cell = ""; }
+    else if (ch !== "\t") cell += ch;
+  }
+  if (cell !== "" || row.length) { row.push(cell); out.push(row); }
+  return out.filter(function (r) { return r.some(function (v) { return v !== ""; }); });
+}
+
+function parseCells(text) {
+  var rows = csvRows(text), cells = {}, errors = [];
+  rows.forEach(function (r, i) {
+    var a = r.map(function (v) { return v.trim(); });
+    if (!a.length) return;
+    var ref = a[0].toUpperCase();
+    if (/^[A-Z]{1,2}[0-9]{1,3}$/.test(ref)) {
+      var value;
+      if (a.length >= 3) {
+        var last = a[a.length - 1];
+        value = isFinite(parseFloat(last.replace(/[$,\s%]/g, ""))) && /^[-+]?[0-9]/.test(last) ? last : a.slice(1).join(",").trim();
+      } else value = a[1];
+      if (value === undefined || value === "") { errors.push("Row " + (i + 1) + ": " + ref + " has no value"); return; }
+      cells[ref] = value;
+    } else if (/^[0-9]*\.?[0-9]/.test(a[0]) && a.length >= 2 && /^[A-Z]{1,2}[0-9]{1,3}$/.test(a[1].toUpperCase())) {
+      cells[a[1].toUpperCase()] = a[0];
+    }
+  });
+  var missing = [];
+  REQUIRED_NUM.forEach(function (c) {
+    if (cells[c] === undefined) { missing.push("Missing cell " + c); return; }
+    var n = parseFloat(String(cells[c]).replace(/[$,\s%]/g, ""));
+    if (!isFinite(n)) { missing.push("Cell " + c + " is not a number: " + cells[c]); return; }
+    cells[c] = n;
+  });
+  if (cells["C6"] === undefined) missing.push("Missing cell C6 (valuation date)");
+  var mode = /sales-to-capital/i.test(String(cells["B22"] || "")) ? "ratio" : "pct";
+  return { cells: cells, errors: errors.concat(missing), mode: mode };
+}
+
+function importCompany(text) {
+  var parsed = parseCells(text);
+  var box = document.getElementById("csvErrors");
+  if (parsed.errors.length) {
+    box.innerHTML = '<div class="banner bad" style="display:block;"><strong>Could not import.</strong><ul class="errors">' +
+      parsed.errors.slice(0, 12).map(function (e) { return "<li>" + esc(e) + "</li>"; }).join("") +
+      (parsed.errors.length > 12 ? "<li>\u2026 and " + (parsed.errors.length - 12) + " more</li>" : "") + "</ul></div>";
+    return false;
+  }
+  var c = parsed.cells;
+  var name = String(c["B2"] || "Imported company").trim();
+  var ticker = (name.match(/\(([A-Z0-9.]{1,6})\)/) || [])[1] || "NEW" + (customs.length + 1);
+  var company = {
+    id: "c" + Date.now().toString(36), ticker: ticker, name: name, date: String(c["C6"]), bear: (c["C25"] || 0.2) * 0.6,
+    facts: { date: String(c["C6"]), price: c["C7"], shares: c["C8"], rev0: c["C9"], m0: c["D33"], netCash: c["C10"], debt: c["C11"], rf: c["C12"], tShield: c["C18"], reinvest: parsed.mode },
+    base: {
+      beta: c["C13"], erp: c["C14"], crp: c["C15"], kd: c["C17"], tax: c["C21"], taxT: c["C26"], inv: c["C22"],
+      tg: c["C23"], roic: c["C24"], lr: c["C25"],
+      g: COLS.map(function (x) { return c[x + "31"]; }),
+      m: COLS.map(function (x) { return c[x + "33"]; })
+    },
+    notes: {}, recompute: true
+  };
+  customs.push(company);
+  write(LS.custom, customs);
+  state.id = company.id;
+  write(LS.selected, state.id);
+  document.getElementById("csvErrors").innerHTML = "";
+  document.getElementById("csvText").value = "";
+  render();
+  return true;
+}
+
+function companyCSV(p) {
+  var c = {};
+  c["B2"] = p.name + " (" + p.ticker + ")";
+  c["B3"] = "USD millions unless stated - valuation date " + dateLabel(p.facts.date);
+  c["C6"] = p.facts.date;
+  ["C7", "C8", "C9", "C10", "C11", "C12", "C13", "C14", "C15", "C17", "C18", "C21", "C22", "C23", "C24", "C25", "C26", "D33"].forEach(function (k) { c[k] = null; });
+  c["C7"] = p.facts.price; c["C8"] = p.facts.shares; c["C9"] = p.facts.rev0; c["C10"] = p.facts.netCash; c["C11"] = p.facts.debt;
+  c["C12"] = p.facts.rf; c["C13"] = p.cur.beta; c["C14"] = p.cur.erp; c["C15"] = p.cur.crp; c["C17"] = p.cur.kd; c["C18"] = p.facts.tShield;
+  c["C21"] = p.cur.tax; c["C22"] = p.cur.inv; c["C23"] = p.cur.tg; c["C24"] = p.cur.roic; c["C25"] = p.cur.lr; c["C26"] = p.cur.taxT;
+  c["D33"] = p.facts.m0;
+  c["B22"] = p.facts.reinvest === "pct" ? "Net investment (% of revenue)" : "Sales-to-capital ratio";
+  c["B7"] = "Share price ($)"; c["B9"] = "Revenue"; c["B23"] = "Terminal growth"; c["B25"] = "Terminal operating margin";
+  COLS.forEach(function (x, i) { c[x + "31"] = p.cur.g[i]; c[x + "33"] = p.cur.m[i]; });
+  return Object.keys(c).map(function (k) { return k + "," + csvField(c[k]); }).join("\n") + "\n";
+}
+
+function csvField(v) {
+  var s = v == null ? "" : String(v);
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+
+function exportCSV(p) {
+  var blob = new Blob([companyCSV(p)], { type: "text/csv" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = (p.ticker || "company") + "-dcf.csv";
+  a.click();
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+}
+
+document.addEventListener("click", function (ev) {
+  var t = ev.target;
+  var chip = t.closest("[data-id]");
+  if (chip && (t.classList.contains("chip") || t.closest("ul.list"))) {
+    if (t.dataset.del) {
+      customs = customs.filter(function (c) { return c.id !== t.dataset.del; });
+      write(LS.custom, customs);
+      delete edits[t.dataset.del];
+      write(LS.edits, edits);
+      if (state.id === t.dataset.del) { state.id = "MU"; write(LS.selected, state.id); }
+      render();
+      return;
+    }
+    state.id = chip.dataset.id;
+    write(LS.selected, state.id);
+    render();
+    return;
+  }
+  var act = t.dataset && t.dataset.act;
+  if (act) {
+    var p = profile(state.id);
+    if (act === "reset") { resetCompany(p); render(); }
+    else if (act === "bear") { bearCompany(p); render(); }
+    else if (act === "export") { exportCSV(p); }
+  }
+});
+
+document.addEventListener("input", function (ev) {
+  if (ev.target.id === "search") {
+    state.query = ev.target.value;
+    write(LS.search, state.query);
+    renderChips();
+    renderCustom();
+    return;
+  }
+  if (ev.target.dataset && ev.target.dataset.k) onInput(ev);
+});
+
+document.getElementById("themeBtn").addEventListener("click", function () { setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark"); });
+function setTheme(t) {
+  document.documentElement.setAttribute("data-theme", t);
+  document.getElementById("themeBtn").textContent = t === "dark" ? "Light" : "Dark";
+  write(LS.theme, t);
+}
+document.addEventListener("keydown", function (ev) {
+  if (ev.key === "d" && !/input|textarea|select/i.test((ev.target.tagName || "")) && !ev.ctrlKey && !ev.metaKey) {
+    setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+  }
+});
+
+document.getElementById("addBtn").addEventListener("click", function () { document.getElementById("addDlg").showModal(); });
+document.getElementById("importBtn").addEventListener("click", function () { document.getElementById("csvDlg").showModal(); });
+document.getElementById("csvFile").addEventListener("change", function (ev) {
+  var f = ev.target.files && ev.target.files[0];
+  if (!f) return;
+  var fr = new FileReader();
+  fr.onload = function () { document.getElementById("csvText").value = fr.result; };
+  fr.readAsText(f);
+});
+document.getElementById("addDlg").addEventListener("close", function (ev) {
+  if (document.getElementById("addDlg").returnValue !== "ok") return;
+  var name = document.getElementById("nName").value.trim();
+  var ticker = document.getElementById("nTicker").value.trim().toUpperCase();
+  if (!name) name = "New company";
+  if (!ticker) ticker = "NEW" + (customs.length + 1);
+  var g = function (id) { return parseFloat(document.getElementById(id).value); };
+  var company = {
+    id: "c" + Date.now().toString(36), ticker: ticker, name: name,
+    date: new Date().toISOString().slice(0, 10), bear: 0.1,
+    facts: Object.assign({}, DEFAULT_FACTS, { price: g("nPrice"), shares: g("nShares"), rev0: g("nRev"), m0: g("nMargin") / 100, netCash: g("nNet"), debt: g("nDebt") }),
+    base: clone(DEFAULT_ASSUMPTIONS), notes: {}, recompute: true
+  };
+  customs.push(company);
+  write(LS.custom, customs);
+  state.id = company.id;
+  write(LS.selected, state.id);
+  render();
+});
+document.getElementById("csvDlg").addEventListener("close", function () {
+  if (document.getElementById("csvDlg").returnValue !== "ok") return;
+  var text = document.getElementById("csvText").value;
+  if (text.trim()) importCompany(text);
+});
+
+setTheme(read(LS.theme, "light"));
+var searchBox = document.getElementById("search");
+searchBox.value = state.query || "";
+render();
+</script>
+</body>
+</html>
