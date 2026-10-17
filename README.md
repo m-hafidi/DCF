@@ -28,17 +28,17 @@ Nothing is lost in the translation. The four bundled models are built from publi
 
 ## The model
 
-- Ten-year forecast with mid-year discounting and a part-year for 2026
+- Ten-year forecast with mid-year discounting and a part-year for the valuation year
 - Terminal value where reinvestment = growth ÷ return on capital
-- A bear-case button and reset-to-base
+- A pessimistic-scenario button (**Scénario prudent**) and reset to base (**Scénario de base**)
 
 ## How to use
 
-1. **Open it.** Go to **[m-hafidi.github.io/DCF/](https://m-hafidi.github.io/DCF/)**. Nothing to install or sign up for. (To use it offline, click the green **Code** button above, choose **Download ZIP**, and double-click `index.html`.)
+1. **Open it.** Go to **[m-hafidi.github.io/DCF/](https://m-hafidi.github.io/DCF/)**. Nothing to install or sign up for. (To use it offline, click the green **Code** button above, choose **Download ZIP**, and double-click `index.html`.) The interface is in French.
 2. **Pick a company.** Click one of the buttons under the search bar, or type a name or ticker.
 3. **Read the answer.** The top row shows the value per share, the market price, and the long-run margin the price needs.
 4. **Change the assumptions.** Edit any box on the left. Percentages are typed as plain numbers (25 means 25%). Edited boxes are outlined and show the base value, and everything on the right updates as you type.
-5. **Stress-test it.** Click **Bear case** for a pessimistic version, or check the sensitivity grid to see the value across different discount rates and margins. **Reset to the base case** puts everything back.
+5. **Stress-test it.** Click **Scénario prudent** (bear case) for a pessimistic version, or check the sensitivity grid to see the value across different discount rates and margins. **Scénario de base** (reset) puts everything back.
 6. **Add your own company.**
    - **Import a DCF spreadsheet:** any `.xlsx` built on the same template. Copy one of the files in `examples/` and fill in your company.
    - **Add a company by hand:** enter the reported figures from the latest annual report. The starting assumptions are placeholders, so change them before trusting the value.
